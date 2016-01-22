@@ -219,7 +219,6 @@ public boolean contains(String word)
       }
     }
     if(matches.size()!=0) {
-      System.out.println(matches);
       return matches.lastEntry().getValue();
     } else {
       return null;
