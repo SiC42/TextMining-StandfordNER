@@ -90,7 +90,7 @@ public class ParseTitleNorm
       try{
           BufferedWriter file = new BufferedWriter(
                              new OutputStreamWriter(
-                             new FileOutputStream( category + ".csv" ), "UTF8" ) );
+                             new FileOutputStream( PATH_DIR_DEST + "/" + category + ".csv" ), "UTF8" ) );
           while (it.hasNext()) {
               String entry = it.next();
               entry = entry.replaceAll("\\(.*\\)", ""); // Klammern entfernen

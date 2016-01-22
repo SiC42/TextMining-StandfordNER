@@ -15,6 +15,7 @@ import java.util.TreeSet;
 public class Mapping {
 
     private static final String DIR_RESSOURCE = "Ressourcen";
+    private static final String DIR_RESSOURCE_CSV = "Vergleichsdaten";
     private static final String FILE_PERSON_CSV = "Person.csv";
     private static final String FILE_ORGA_CSV = "Organisation.csv";
     private static final String FILE_LOC_CSV = "Ort.csv";
@@ -89,9 +90,9 @@ public class Mapping {
         dict = new Dictionary(blacklist);
         try {
             System.out.println("Fülle Wörterbuch mit Daten");
-            listToDict(DIR_RESSOURCE + "/" + FILE_ORGA_CSV);
-            listToDict(DIR_RESSOURCE + "/" + FILE_LOC_CSV);
-            listToDict(DIR_RESSOURCE + "/" + FILE_PERSON_CSV);
+            listToDict(DIR_RESSOURCE_CSV + "/" + FILE_ORGA_CSV);
+            listToDict(DIR_RESSOURCE_CSV + "/" + FILE_LOC_CSV);
+            listToDict(DIR_RESSOURCE_CSV + "/" + FILE_PERSON_CSV);
             System.out.println("Wörterbuch gefüllt." +
                     "Anzahl der Einträge im Schlüssel: " + dict.size());
 

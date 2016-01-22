@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import mapping.Mapping;
 import org.apache.commons.compress.compressors.CompressorException;
-import parseTitleNorm.ParseTitleNorm;
+import parsetitlenorm.ParseTitleNorm;
 import parsing.GetDataFromWikiDump;
 
 /**
@@ -24,10 +24,10 @@ import parsing.GetDataFromWikiDump;
  */
 public class Main {
 
-    private static final String DEFAULTPATHWIKIDUMP = "AusgangsDaten/wikiDump.xml.bz2";
+    private static final String DEFAULTPATHWIKIDUMP = "Ressourcen/wikiDump.xml.bz2";
     private static final String DEFAULTPATHPLAINTEXT = "Ergebnisse/AA/wiki_00";
-    private static final String DEFAULTPATHTITLENORM = "AusgangsDaten/titleNorm.txt";
-    private static final String DEFAULTPATHPORPERTY = "AusgangsDaten/default.prop";
+    private static final String DEFAULTPATHTITLENORM = "Ressourcen/titleNorm.txt";
+    private static final String DEFAULTPATHPORPERTY = "Ressourcen/default.prop";
 
     public static String showMenu() {
         Scanner scanner = new Scanner(System.in);
