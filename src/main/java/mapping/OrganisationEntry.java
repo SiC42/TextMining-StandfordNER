@@ -3,7 +3,8 @@ package mapping;
 import java.util.LinkedList;
 
 /**
- * Created by SiC on 21.01.2016.
+ * Repräsentiert einzelne Organisationseinträge des Wörterbuchs
+ * Vergleiche mit Entry (@link #Entry)
  */
 public class OrganisationEntry extends Entry{
     /**

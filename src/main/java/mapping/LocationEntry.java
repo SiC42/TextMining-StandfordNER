@@ -3,9 +3,10 @@ package mapping;
 import java.util.LinkedList;
 
 /**
- * Created by SiC on 21.01.2016.
+ * Repräsentiert einzelne Ortseinträge des Wörterbuchs
  */
 public class LocationEntry extends Entry {
+
     /**
      * Konstruiert Eintrag mit Liste von Wörtern.
      * Übergibt Liste und Kategorie.

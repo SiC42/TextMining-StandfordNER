@@ -28,6 +28,11 @@ public class Mapping {
     private static final String REPLACE_CHARS = "[.,;'\"()]";
     static Dictionary dict;
 
+    /**
+     * Liest aus der angegebenen Blacklist-Datei die Wörter aus und speichert sie.
+     * @param path Pfad zu der Blacklist-Datei
+     * @return sortierte Menge der Wörter
+     */
     public static TreeSet<String> listToBlacklist(String path) {
         TreeSet<String> blacklist = new TreeSet<>();
         try {
@@ -42,6 +47,10 @@ public class Mapping {
         return blacklist;
     }
 
+    /**
+     * Liest aus der angegebenen CSV-Datei die Worttupel (Eintrag;Kategorie) aus und speichert sie im Wörterbuch.
+     * @param path Pfad zur auszulesenden CSV-Datei
+     */
     public static void listToDict(String path) {
         try {
             String line;

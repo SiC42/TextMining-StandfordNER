@@ -15,11 +15,15 @@ import org.simmetrics.metrics.StringDistances;
 public class Dictionary
 {
   /**
-   * Eigentliches Wörterbuch.
-   * Beispiel für Aufbau:
-   * {"1.": [["FC", "Bayern", "München"],[FC, Köln]]}
+   * Wörterbuch-Daten.
+   * Key-Feld enthält erstes Wort der Einträge.
+   * LinkedList enthält die Einträge, die mit dem Key-Wort anfangen.
    */
   Map<String,LinkedList<Entry>> dictionary;
+
+  /**
+   * Liste mit Wörtern, die nicht als Key hinzugefügt werden sollen
+   */
   TreeSet<String> blacklist;
 
 
@@ -28,8 +32,14 @@ public class Dictionary
    */
   int maxEntrySize;
 
-  private final float MATCH_VALUE = 0.85f;
+  /**
+   * Gibt Wert an, ab dem die relative Ähnlickeit als "Match" gesehen wird.
+   */
+  public final float MATCH_VALUE = 0.85f;
 
+  /**
+   * Initialisiert leeres Wörterbuch mit leerer Blacklist.
+   */
   public Dictionary()
   {
     dictionary = new TreeMap<String,LinkedList<Entry>>(new WordComparator());
@@ -37,7 +47,8 @@ public class Dictionary
     blacklist = new TreeSet<>();
   }
   /**
-   * Initialisiert leeres Wörterbuch.
+   * Initialisiert leeres Wörterbuch. Blacklist wird mit parameter gefüllt.
+   * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
    */
   public Dictionary(TreeSet<String> blacklist)
   {
@@ -51,6 +62,7 @@ public class Dictionary
    * Initialisert Wörterbuch mit übergebenen Einträgen.
    * @param entry Einträge, ein Eintrag pro Array-Feldeintrag
    * @param category mit den Einträgen assoziierte Kategorie
+   * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
    */
   public Dictionary(String entry, String category, TreeSet<String> blacklist)
   {
@@ -63,27 +75,12 @@ public class Dictionary
    * Initialisert Wörterbuch mit übergebenen Einträgen und der Kategorie.
    * @param  entries Einträge, ein Eintrag pro Array-Feldeintrag
    * @param category mit den Einträgen assoziierte Kategorie
+   * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
    */
   public Dictionary(String[] entries, String category, TreeSet<String> blacklist)
   {
     this(blacklist);
     add(entries, category);
-  }
-
-
-  /**
-   * Initialisert Wörterbuch mit übergebenen Einträgen.
-   * @param  entryAndCategory Array, in dem der alle Feldwerte Einträge sind, außer der letzte, welcher die Kategorie angibt
-   */
-  public Dictionary(String[] entryAndCategory)
-  {
-    this();
-    String[] entry = new String[entryAndCategory.length-1];
-    for(int i=0;i<entry.length;i++)
-    {
-      entry[i] = entryAndCategory[i];
-    }
-    add(entry, entryAndCategory[entryAndCategory.length-1]);
   }
 
 
@@ -94,21 +91,6 @@ public class Dictionary
   public Map<String,LinkedList<Entry>> getDictionary()
   {
     return dictionary;
-  }
-
-
-  /**
-   * Fügt Einträge und Kategorie zu dem Wörterbuch hinzu
-   * @param  entryAndCategory Array, in dem der alle Feldwerte Einträge sind, außer der letzte, welcher die Kategorie angibt
-   */
-  public void add(String[] entryAndCategory)
-  {
-    String[] entry = new String[entryAndCategory.length-1];
-    for(int i=0;i<entry.length;i++)
-    {
-      entry[i] = entryAndCategory[i];
-    }
-    add(entry, entryAndCategory[entryAndCategory.length-1]);
   }
 
 
@@ -131,13 +113,6 @@ public class Dictionary
    */
   public void add(String entryStr, String category)
   {
-   /* String[] splitEntry = entryStr.split(" ");
-    updateMaxEntrySize(splitEntry.length);
-    LinkedList<String> words = new LinkedList<String>();
-    for(int i=0;i<splitEntry.length;i++)
-    {
-      words.add(splitEntry[i]);
-    }*/
     Entry entry;
     switch(category) {
       case "Person":
@@ -154,7 +129,7 @@ public class Dictionary
         return;
     }
     for(String entryKey : entry.getKeys()) {
-      if(!blacklist.contains(entryKey) && !entryKey.equals("")) {
+      if(!blacklist.contains(entryKey) && !entryKey.equals("")) { //Blacklist-Wörter & leere Wörter abfangen
         if (dictionary.containsKey(entryKey)) //erstes Wort als Schlüssel im Wörterbuch
         {
           dictionary.get(entryKey).add(entry);
@@ -163,7 +138,6 @@ public class Dictionary
           //erstelle neue Liste von Einträgen und füge sie zum Wörterbuch hinzu
           LinkedList<Entry> followWords = new LinkedList<>();
           followWords.add(entry);
-
           dictionary.put(entryKey, followWords);
         }
       }
@@ -172,10 +146,16 @@ public class Dictionary
   }
 
 
-public boolean contains(String word)
+  /**
+   * Gibt true zurück, wenn übergebenes Wort als Key (erstes Wort) im Wörterbuch steht.
+   * @param word Wort, das überprüft werden soll
+   * @return true, wenn Wort im Wörterbuch, false sonst
+     */
+  public boolean contains(String word)
 {
   return dictionary.containsKey(word);
 }
+
 
   /**
    * Gibt Match zurück, wenn ein Eintrag mit den ersten Wörtern des Satzes
@@ -224,7 +204,6 @@ public boolean contains(String word)
       return null;
     }
   }
-
 
 
   /**

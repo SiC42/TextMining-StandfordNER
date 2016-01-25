@@ -18,8 +18,15 @@ public class Match
    */
   String category;
 
+  /**
+   * Eintrag, mit dem das Match gefunden wurde.
+   */
   String comparedPhrase;
 
+
+  /**
+   * Ähnlichkeitsgrad des Teil-Satzes mit dem Eintrag
+   */
   float matchValue;
 
 
@@ -58,7 +65,13 @@ public class Match
     return numberOfWords;
   }
 
+
+  /**
+   * Gibt den gematchten Eintrag zurück.
+   * @return gematchter Eintrag
+     */
   public String getComparedPhrase() { return comparedPhrase;}
+
 
   /**
    * Gibt Kategorie des gematchten Eintrags zurück.
@@ -70,10 +83,15 @@ public class Match
   }
 
 
+  /**
+   * Gibt den Ähnlichkeitsgrad zurück.
+   * @return Ähnlichkeitsgrad
+   */
   public float getMatchValue()
   {
     return matchValue;
   }
+
 
   /**
    * Gibt String-Repräsentation des Objekts zurück.
@@ -84,16 +102,5 @@ public class Match
   {
     return String.format("Match mit '%s', Kategorie:%s (Länge: %d, Match-Value: %f)",
             comparedPhrase, category, numberOfWords, matchValue);
-  }
-
-
-  /**
-   * Test-Methode zum Testen der String-Repräsentation.
-   * @param args obsolete
-   */
-  public static void main(String[] args)
-  {
-    /*Match match = new Match(5,"test", "comp");
-    System.out.println(match);*/
   }
 }

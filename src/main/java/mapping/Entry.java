@@ -19,7 +19,17 @@ public abstract class Entry
    */
   String category;
 
-  public final float MISSING_NAME_PENALITY = 0.05f;
+
+  /**
+   * Gibt Strafe an, falls ein Wort des Eintrags nicht in den übergebenem Teilsatz steht.
+   * Der Wert wird von dem prozentualem Match-Wert abgezogen.
+   */
+  public final float MISSING_NAME_PENALITY = 0.1f;
+
+
+  /**
+   * Gibt minimalen Wert an, ab dem ein Wort als Match gilt. Hierbei werden die Suffix-Ähnlichkeiten betrachtet!
+   */
   public final float MIN_MATCH_VALUE = 0.5f;
 
 
@@ -99,7 +109,12 @@ public abstract class Entry
   }
 
 
-  public String getWordsAsString()
+  /**
+   * Gibt Eintrag in String-Repräsentation aus.
+   * Beispiel: ["Gerhard", "Schröder"] wird zu "Gerhard Schröder".
+   * @return Eintrag als String-Repräsentation
+     */
+  public String getEntryAsString()
   {
     String wordString = "";
     for(String word : words)
@@ -136,6 +151,13 @@ public abstract class Entry
     return keys;
   }
 
+
+  /**
+   * Vergleichsfunktion, die einen Teilsatz auf den Eintrag vergleicht und ein Match zurückgibt, falls Ähnlichkeit
+   * hoch genug.
+   * @param sentencesList zu vergleichender Teilsatz
+   * @return Match-Objekt, falls Match-Wert (@see MIN_MATCH_VALUE) hoch genug, sonst null
+   */
   public Match compareTo(LinkedList<String> sentencesList) {
     WordComparator comp = new WordComparator();
     float matchValue = 0;
@@ -158,7 +180,7 @@ public abstract class Entry
         for (int i = 0; i < size(); i++) {
           sentences += sentencesList.get(i) + " ";
         }
-        return new Match(size(), getCategory(), getWordsAsString(), ((matchValue/size())));
+        return new Match(size(), getCategory(), getEntryAsString(), ((matchValue/size())));
       }
     }
     return null;

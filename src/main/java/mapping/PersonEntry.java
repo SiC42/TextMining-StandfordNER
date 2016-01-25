@@ -4,16 +4,22 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
- * Repräsentiert einzelne Einträge des Wörterbuchs.
+ * Repräsentiert einzelne Personen-Einträge des Wörterbuchs.
  * @author Simon Bordewisch
  */
 public class PersonEntry extends Entry {
 
+    /**
+     * Voller Name der Person
+     */
     String fullName;
 
-    public final float MISSING_NAME_PENALITY = 0.1f;
-    public final float MIN_MATCH_VALUE = 0.5f;
+
+    /**
+     * Maximale Anzahl der fehlenden Wörter im Teilsatz, um noch als Match zu gelten
+     */
     public final int MAX_MISSING_WORDS = 2;
+
 
     /**
      * Konstruiert Eintrag mit Liste von Wörtern.
@@ -53,23 +59,44 @@ public class PersonEntry extends Entry {
         super(wordsArray, category);
     }
 
+
+    /**
+     * Speichert vollen Namen.
+     * @param fullName zu speichernder Name
+     */
     public void setFullName(String fullName)
     {
         this.fullName = fullName;
         cleanName();
     }
 
+
+    /**
+     * Prozedur zur bereinigung des Namens.
+     * Siehe {@link #splitName()} und {@link #postCleanName()}
+     */
     private void cleanName()
     {
         splitName();
         postCleanName();
     }
 
+    /**
+     * Teilt Wörter in Teil-Namen auf und übergibt diese an Variable words.
+     * Vergleiche {@link #splitName(String)}.
+     */
     private void splitName()
     {
         words = splitName(fullName);
     }
 
+
+    /**
+     * Teilt Wörter in Teil-Namen auf und gibt Liste mit diesen auf.
+     * Beispiel: "Karl-Theodor zu Guttenberg" wird zu ["Karl-Theodor", "zu Guttenberg"].
+     * @param fullName voller Name der Person
+     * @return Liste der Teil-Namen
+     */
     private LinkedList<String> splitName(String fullName)
     {
         LinkedList<String> names = new LinkedList<String>(); // Liste zum speichern
@@ -99,6 +126,12 @@ public class PersonEntry extends Entry {
         return names;
     }
 
+
+    /**
+     * Extrhiert Teil-Namen des übergebenen Strings als Array.
+     * @param fullName zu extrahierender String
+     * @return Array mit Teil-Namen des übergebenen Strings
+     */
     private String[] extract(String fullName)
     {
         LinkedList<String> names = splitName(fullName);
@@ -107,6 +140,13 @@ public class PersonEntry extends Entry {
         return nameArray;
     }
 
+
+    /**
+     * Vor-Bereinigung des Strings, entfernt Klammern,
+     * Abkürzungen (mit ".") und Namen, die nur Sonderzeichen beinhalten.
+     * @param fullName String, der vorbereinigt werden soll
+     * @return vorbereinigter String als Array
+     */
     private String[] preCleanName(String fullName)
     {
         fullName = fullName.replaceAll("\\(.*\\)", ""); // Klammern entfernen
@@ -123,11 +163,16 @@ public class PersonEntry extends Entry {
         return nameArray;
     }
 
+
+    /**
+     * Bereinigt Wörter, die nur klein geschrieben werden
+     * @return Liste mit bereinigten Wörtern
+     */
     private LinkedList<String> postCleanName()
     {
         for(String name : words)
         {
-            if(name.matches("^[a-z][\\p{L}]*")) {
+            if(name.matches("^[a-zäöü][\\p{L}]*")) {
                 words.remove(name);
             }
         }
@@ -135,9 +180,10 @@ public class PersonEntry extends Entry {
     }
 
     /**
-     * Parst Anredeprädikate
-     *
-     *
+     * Parst Anredeprädikate (von, zu, ...).
+     * @param nameSplit Array mit zu bearbeitenden Wörtern
+     * @param locParticle Zeiger auf die Stelle, in der das Anredeprädikat steht
+     * @return Liste, in der die Anredeprädikate und Nachnamen als ein Eintrag gelten
      */
     private LinkedList<String> particleParser(String[] nameSplit, int locParticle)
     {
@@ -161,7 +207,13 @@ public class PersonEntry extends Entry {
         return names;
     }
 
-    public Match compareTo(LinkedList<String> sentencesList)
+    /**
+     * Vergleichsfunktion, die einen Teilsatz auf den Eintrag vergleicht und ein Match zurückgibt, falls Ähnlichkeit
+     * hoch genug.
+     * @param sentencesList zu vergleichender Teilsatz als Liste
+     * @return Match-Objekt, falls Match-Wert (@see MIN_MATCH_VALUE) hoch genug, sonst null
+     */
+    @Override public Match compareTo(LinkedList<String> sentencesList)
     {
         float matchValue = 0;
         int numberOfWords = 0;
@@ -171,7 +223,7 @@ public class PersonEntry extends Entry {
             boolean contains=false;
             for(String name : words)
             {
-                if(comp.compare(name,sentencesList.get(i)) == 0)
+                if(comp.compare(name,sentencesList.get(i)) == 0) //match
                 {
                     contains = true;
                     numberOfWords++;
@@ -195,18 +247,29 @@ public class PersonEntry extends Entry {
             }
         }
         if(matchValue > MIN_MATCH_VALUE) {
-            return new Match(numberOfWords, category, getWordsAsString(), matchValue);
+            return new Match(numberOfWords, category, getEntryAsString(), matchValue);
         }
         else {
             return null;
         }
     }
 
+    /**
+     * Vergleichsfunktion, die einen Teilsatz auf den Eintrag vergleicht und ein Match zurückgibt, falls Ähnlichkeit
+     * hoch genug.
+     * @param sentences zu vergleichender Teil-Satz als ein String
+     * @return Match-Objekt, falls Match-Wert (@see MIN_MATCH_VALUE) hoch genug, sonst null
+     */
     public Match compareTo(String sentences) {
         LinkedList<String> sentencesList = new LinkedList<>(Arrays.asList(sentences.split(" ")));
         return compareTo(sentencesList);
     }
 
+
+    /**
+     * Gibt alle Keys des Wörterbuchs, also das erste Wort der Einträge, als Array aus
+     * @return alle Keys des Wörterbuchs als Array
+     */
     public String[] getKeys ()
     {
         String[] keys = new String[words.size()];
