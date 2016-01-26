@@ -1,16 +1,24 @@
 package parsetitlenorm;
-import java.util.LinkedList;
-import java.util.HashMap;
 
+
+/**
+ * Ziel der Klasse ist es die Organisationen der titleNorm zu parsen, sodass nicht nur die vollen Namen aufgenommen
+ * werden, sondern auch evtuelle Abkürzungen, die hinter der Organisation in Klammern stehen.
+ * Dabei werden verschiedene Filter verwendet um sicher zu stellen, dass die in Klammern stehenden Begriffe auch
+ * möglichst wirklich Abkürzungen sind.
+ */
 public class OrganisationNameExtractor {
 
 
-    private static final String DEFAULT_PATH
-        = "Organisation.csv";
-
+    /**
+     * Extrahiert die in Klammern stehenden Abkürzungen aus dem übergebenen String.
+     * Falls keine Abkürzung in den Klammern erkannt wird, werden die Klammern samt Inhalt entfernt.
+     * @param name String, der bearbeitet werden soll.
+     * @return
+     */
     public static String[] extract(String name)
     {
-      if(name.matches(".*\\([A-Z]*\\)"))
+      if(name.matches(".*\\([A-Z]*\\)")) // Klammern mit Großbuchstaben
       {
         int openBracketIndex = name.indexOf("(");
         int closeBracketIndex = name.indexOf(")");
@@ -25,26 +33,4 @@ public class OrganisationNameExtractor {
       }
     }
 
-    public static String printArray(String[] nameArray)
-    {
-      String output = "{";
-      for(String name : nameArray)
-      {
-        output+= " " + name + ",";
-      }
-      return output.substring(0, output.length()-1) + "}";
-
-    }
-
-
-    public static void main(String[] args) {
-      System.out.println(printArray(extract("Sozialdemokratische Partei Deutschlands (SPD)")));
-      System.out.println(printArray(extract("Christlich Demokratische Union (CDU)")));
-      System.out.println(printArray(extract("Testfalsch (ÖST)")));
-      System.out.println(printArray(extract("Testfalsch2 (te-ta)")));
-      String[] testString = {"Angelina Jolie",
-                         "Archimedes",
-                         "Al-Biruni"};
-      System.out.println(printArray(testString));
-    }
 }
