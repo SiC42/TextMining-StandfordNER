@@ -17,21 +17,54 @@ import org.xml.sax.SAXException;
 
 /**
  * Implementiere ContentHandler zur verarbetung des XML-Dumps
+ *
  * @author Sebastian Gottwald
  */
-public class PersonenContentHandler implements ContentHandler {
+public class WikiContentHandler implements ContentHandler {
 
+    /**
+     * ArrayList in der Personen Artikel gespeichert werden
+     */
     private final ArrayList<Page> person_Pages = new ArrayList<>();
+    /**
+     * ArrayList in der Organisationen Artikel gespeichert werden
+     */
     private final ArrayList<Page> organisation_Pages = new ArrayList<>();
+    /**
+     * ArrayList in der Orts Artikel gespeichert werden
+     */
     private final ArrayList<Page> places_Pages = new ArrayList<>();
+    /**
+     * Text des zu behandelten Artikels
+     */
     private String currentValue;
+    /**
+     * Jeder Artikel wird als Obbjekt abgespeichert
+     */
     private Page page;
+    /**
+     * Buffer zum extrahieren eines Wikipediarartikels
+     */
     private StringBuilder buffer;
+    /**
+     * Anzahl der zu extrahierenden Personen Artikel
+     */
     private int number_person_articles;
+    /**
+     * Anzahl der zu extrahierenden Orts Artikel
+     */
     private int number_places_articles;
+    /**
+     * Anzahl der zu extrahierenden Organisationen Artikel
+     */
     private int number_organisation_articles;
+    /**
+     * Pfad zu AusgabeDatei
+     */
     private static final String PATH_OUTPUT = "Ergebnisse/ExtractedArticles.xml";
-
+    /**
+     * Anfang der XML Datei, wird am Anfang der AusgabeDokuments eingefügt
+     */
     private static final String documentheader = "<mediawiki xmlns=\"http://www.mediawiki.org/xml/export-0.10/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd\" version=\"0.10\" xml:lang=\"de\">"
             + "<siteinfo>"
             + "<sitename>Wikipedia</sitename>"
@@ -70,14 +103,30 @@ public class PersonenContentHandler implements ContentHandler {
             + "    </namespaces>\n"
             + "  </siteinfo>";
 
-    PersonenContentHandler(int place_articles, int person_articles, int organisation_articles) {
+    /**
+     * Intitialisiert WikiContentHandler mit der zu extrahierenden Anzahl an
+     * Kategoriespeziefischen Artikeln
+     *
+     * @param place_articles Anzahl der zu extrahierenden Orts-Artikel
+     * @param person_articles Anzahl der zu extrahierenden Personen-Artikel
+     * @param organisation_articles Anzahl der zu extrahierenden
+     * Organisationen-Artikel
+     */
+    WikiContentHandler(int place_articles, int person_articles, int organisation_articles) {
         this.number_person_articles = person_articles;
         this.number_places_articles = place_articles;
         this.number_organisation_articles = organisation_articles;
     }
 
-    // Aktuelle Zeichen die gelesen werden, werden in eine Zwischenvariable
-    // gespeichert
+    /**
+     * Aktuelle Zeichen die gelesen werden, werden in eine Zwischenvariable
+     * gespeichert
+     *
+     * @param ch
+     * @param start
+     * @param length
+     * @throws SAXException
+     */
     public void characters(char[] ch, int start, int length)
             throws SAXException {
         for (int i = start; i < start + length; i++) {
@@ -86,21 +135,39 @@ public class PersonenContentHandler implements ContentHandler {
         currentValue = buffer.toString();
     }
 
-    // Methode wird aufgerufen wenn der Parser zu einem Start-Tag kommt
+    /**
+     * Methode wird aufgerufen wenn der Parser zu einem Start-Tag kommt
+     *
+     * @param uri
+     * @param localName Starttag
+     * @param qName
+     * @param atts
+     * @throws SAXException
+     */
     public void startElement(String uri, String localName, String qName,
             Attributes atts) throws SAXException {
+        //neuen Buffer erzeugen welches den Inhald des jeweiligen Textes zwischenspeichert
         buffer = new StringBuilder();
+        // Wenn Tag <page> wird ein neues Artikel-Objekt erzeugt
         if (localName.equals("page")) {
-            // Neue Artikel erzeugen
+            // Neues ArtikelObjekt erzeugen
             page = new Page();
         }
     }
 
-    // Methode wird aufgerufen wenn der Parser zu einem End-Tag kommt
+    /**
+     * Methode wird aufgerufen wenn der Parser zu einem End-Tag kommt Komplette
+     * Kopie eines Artikels aus dem WikipediaDumps wird als Page Objekt erstellt
+     *
+     * @param uri
+     * @param localName Name des Endtags
+     * @param qName
+     * @throws SAXException
+     */
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
-       
-        //System.out.println(localName);        
+
+        //Wenn Endtag </title> setze alles was im Buffer ist, also alles von Starttag <title> bis Endtag </title>, als title Attribut des Objektes Page
         if (localName.equals("title")) {
             page.setTitle(currentValue);
         }
@@ -142,12 +209,15 @@ public class PersonenContentHandler implements ContentHandler {
         }
         if (localName.equals("text")) {
             page.setText(currentValue);
+            //Wenn im Text der String "Typ=p" vorkommt, handelt es Sich um einen Personenbezogenen Artikel
             if (currentValue.contains("TYP=p")) {
                 page.setType("PERSON");
             }
+            //Wenn im Text der String "Typ=g" vorkommt, handelt es Sich um einen Ortsbezogenen Artikel
             if (currentValue.contains("TYP=g")) {
                 page.setType("GEOGRAFIKUM");
             }
+            //Wenn im Text der String "Typ=k" vorkommt, handelt es Sich um einen Organisationsbezogenen Artikel
             if (currentValue.contains("TYP=k")) {
                 page.setType("ORGANISATION");
             }
@@ -160,13 +230,15 @@ public class PersonenContentHandler implements ContentHandler {
             page.setRevision(currentValue);
         }
 
-        // Seite in Seitenliste abspeichern falls <page> End-Tag erreicht wurde.
+        // Artikel in Personen-ArrayList abspeichern falls </page> End-Tag erreicht wurde und Pagetyp = "PERSON" ist
         if (localName.equals("page") && page.getType() == "PERSON" && person_Pages.size() < number_person_articles) {
             person_Pages.add(page);
-            //System.out.println("Neue Person");
+            //System.out.println("Neue Person");   
+            // Artikel in OrtsArrayList abspeichern falls <page> End-Tag erreicht wurde und Pagetyp = "ORT" ist
         } else if (localName.equals("page") && page.getType() == "GEOGRAFIKUM" && places_Pages.size() < number_places_articles) {
             places_Pages.add(page);
             //System.out.println("Neue Ort");
+            // Artikel in Artikel OrganisationenList abspeichern falls <page> End-Tag erreicht wurde und Pagetyp = "ORGANISATION" ist
         } else if (localName.equals("page") && page.getType() == "ORGANISATION" && organisation_Pages.size() < number_organisation_articles) {
             organisation_Pages.add(page);
             //System.out.println("Neue Organisation");
@@ -174,19 +246,27 @@ public class PersonenContentHandler implements ContentHandler {
 
         //Wenn genügend Artikel gefunden, brich bearbeitung ab
         if (person_Pages.size() == number_person_articles && places_Pages.size() == number_places_articles && organisation_Pages.size() == number_organisation_articles) {
-            endDocument(); 
-            throw new MySAXTerminatorException();
+            endDocument();
+            throw new MySAXTerminatorException(); //Spezielle Exception
         }
-        
+
     }
 
+    /**
+     * Wird ausgeführd wenn das Ende des zu parsenden Dokuments erreicht ist
+     * oder MySAXTerminatorException gewurfen wurde, also die benötigte Anzahl
+     * der Artikel gefunden wurde Schreibt die Extrahierten
+     * Kategoriespeziefischen Artikel in Ausgabe-Datei
+     *
+     * @throws SAXException
+     */
     public void endDocument() throws SAXException {
         try {
             System.out.println("Extraktion beendet... Beginne in Datei zu schreiben");
             //System.out.println("Anzahl der Extrahierten Personen-Artikel: " + person_Pages.size());
             //System.out.println("Anzahl der Extrahierten Orts-Artikel: " + places_Pages.size());
             //System.out.println("Anzahl der Extrahierten Organisationen-Artikel: " + organisation_Pages.size());
-            
+
             BufferedWriter extractedData = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(PATH_OUTPUT), "UTF8"));
             extractedData.append(documentheader);
             for (Page p : places_Pages) {
@@ -194,19 +274,20 @@ public class PersonenContentHandler implements ContentHandler {
                 extractedData.newLine();
                 extractedData.flush();
             }
-            for(Page q : person_Pages){
+            for (Page q : person_Pages) {
                 extractedData.append(q.toString());
                 extractedData.newLine();
-                extractedData.flush();                
+                extractedData.flush();
             }
             for (Page r : organisation_Pages) {
                 extractedData.append(r.toString());
                 extractedData.newLine();
-                extractedData.flush(); 
+                extractedData.flush();
             }
             extractedData.flush();
-            
-/*
+
+            //Möglichkeit auch Artikel je Kategorie in separate Datei zu schreiben
+            /*
             //System.out.println(person_Pages.toString());
             BufferedWriter places_file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Orte.xml"), "UTF8"));
             BufferedWriter person_file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Personen.xml"), "UTF8"));
@@ -236,42 +317,91 @@ public class PersonenContentHandler implements ContentHandler {
                 organisation_file.newLine();
             }
             organisation_file.flush();
-*/
+             */
         } catch (FileNotFoundException e) {
             System.out.println("Fehler: Schreiben in die Datei nicht möglich.");
             e.printStackTrace();
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(PersonenContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WikiContentHandler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(PersonenContentHandler.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WikiContentHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @param prefix
+     * @throws SAXException
+     */
     public void endPrefixMapping(String prefix) throws SAXException {
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @param ch
+     * @param start
+     * @param length
+     * @throws SAXException
+     */
     public void ignorableWhitespace(char[] ch, int start, int length)
             throws SAXException {
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @param target
+     * @param data
+     * @throws SAXException
+     */
     public void processingInstruction(String target, String data)
             throws SAXException {
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @param locator
+     */
     public void setDocumentLocator(Locator locator) {
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @param name
+     * @throws SAXException
+     */
     public void skippedEntity(String name) throws SAXException {
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @throws SAXException
+     */
     public void startDocument() throws SAXException {
     }
 
+    /**
+     * Nicht benutze Funtkion
+     *
+     * @param prefix
+     * @param uri
+     * @throws SAXException
+     */
     public void startPrefixMapping(String prefix, String uri)
             throws SAXException {
     }
 
+    /**
+     * Exception wird geworfen wenn Alle Benötigten Artikel gefunden wurden aber
+     * das Ende des Dokumentes noch nicht erreicht wurde
+     */
     private static class MySAXTerminatorException extends SAXException {
+
         public MySAXTerminatorException() {
         }
     }
