@@ -95,6 +95,21 @@ public class Dictionary
 
 
   /**
+   * Fügt Einträge und Kategorie zu dem Wörterbuch hinzu
+   * @param  entryAndCategory Array, in dem der alle Feldwerte Einträge sind, außer der letzte, welcher die Kategorie angibt
+   */
+  public void add(String[] entryAndCategory)
+  {
+    String[] entry = new String[entryAndCategory.length-1];
+    for(int i=0;i<entry.length;i++)
+    {
+      entry[i] = entryAndCategory[i];
+    }
+    add(entry, entryAndCategory[entryAndCategory.length-1]);
+  }
+
+
+  /**
    * Fügt übergebene Einträge zum Wörterbuch hinzu.
    * @param entries Einträge, ein Eintrag pro Array-Feldeintrag
    * @param category mit den Einträgen assoziierte Kategorie
