@@ -30,6 +30,7 @@ public class Mapping {
 
     /**
      * Liest aus der angegebenen Blacklist-Datei die Wörter aus und speichert sie.
+     *
      * @param path Pfad zu der Blacklist-Datei
      * @return sortierte Menge der Wörter
      */
@@ -39,7 +40,7 @@ public class Mapping {
             String line;
             BufferedReader br = new BufferedReader(new FileReader(path));
             while ((line = br.readLine()) != null) {
-                    blacklist.add(line);
+                blacklist.add(line);
             }
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
@@ -49,6 +50,7 @@ public class Mapping {
 
     /**
      * Liest aus der angegebenen CSV-Datei die Worttupel (Eintrag;Kategorie) aus und speichert sie im Wörterbuch.
+     *
      * @param path Pfad zur auszulesenden CSV-Datei
      */
     public static void listToDict(String path) {
@@ -70,15 +72,14 @@ public class Mapping {
         int maxEntrySize = dict.getMaxEntrySize();
         int stelle = 0;
         while (stelle < text.size()) {
-            if (dict.contains(text.get(stelle).replaceAll(REPLACE_CHARS,""))) {
+            if (dict.contains(text.get(stelle).replaceAll(REPLACE_CHARS, ""))) {
                 String textToTest = "";
                 for (int i = 0; i < maxEntrySize && stelle + i < text.size(); i++) {
                     textToTest += text.get(i + stelle) + " ";
                 }
-                System.out.println(textToTest.replaceAll(REPLACE_CHARS,""));
-                Match match = dict.findEntryMatch(textToTest.replaceAll(REPLACE_CHARS,""));
+                Match match = dict.findEntryMatch(textToTest.replaceAll(REPLACE_CHARS, ""));
                 if (match != null) {
-                    text.add(stelle, "<" + match.getCategory()  + ":" + match.getComparedPhrase() + ">");
+                    text.add(stelle, "<" + match.getCategory() + ":" + match.getComparedPhrase() + ">");
                     stelle += match.getNumberOfWords() + 1;
                     text.add(stelle, "</" + match.getCategory() + ">");
                 }
@@ -93,10 +94,10 @@ public class Mapping {
      *
      * @param path Pfad zum zu untersuchendem Dokument
      */
-    public static void startMapping(String path) {
+    public static void startMapping(String path, boolean personEntry) {
         System.out.println("Fülle Blacklist");
         TreeSet<String> blacklist = listToBlacklist(DIR_RESSOURCE + "/" + FILE_BLACKLIST);
-        dict = new Dictionary(blacklist);
+        dict = new Dictionary(blacklist, personEntry);
         try {
             System.out.println("Fülle Wörterbuch mit Daten");
             listToDict(DIR_RESSOURCE_CSV + "/" + FILE_ORGA_CSV);
@@ -104,10 +105,11 @@ public class Mapping {
             listToDict(DIR_RESSOURCE_CSV + "/" + FILE_PERSON_CSV);
             System.out.println("Wörterbuch gefüllt." +
                     "Anzahl der Einträge im Schlüssel: " + dict.size());
+            System.out.println(dict.getEntries("Merkel"));
 
 
             String line = "";
-            LinkedList<String> text = new LinkedList<String>();
+            LinkedList<String> text = new LinkedList<>();
 
             BufferedReader br = new BufferedReader(new FileReader(path));
             while ((line = br.readLine()) != null) {
@@ -127,13 +129,14 @@ public class Mapping {
             mapping(dict, text);
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
-            System.out.println("Mappen beendet Schreibe in Datei (" + elapsedTime/1000f + " sec).");
+            System.out.println("Mappen beendet. Schreibe in Datei (" + elapsedTime / 1000f + " sec).");
             BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Ergebnisse/Mapped.out"), "UTF8"));
             for (String word : text) {
                 file.append(word + " ");
             }
             file.flush();
             file.close();
+            System.out.println("In Datei schreiben beendet.");
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
         }
@@ -141,6 +144,6 @@ public class Mapping {
 
 
     public static void main(String[] args) {
-        startMapping("test.txt");
+        startMapping("test.txt", true);
     }
 }

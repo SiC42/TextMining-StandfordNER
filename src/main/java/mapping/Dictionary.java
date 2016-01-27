@@ -12,283 +12,298 @@ import org.simmetrics.metrics.StringDistances;
  *
  * @author Simon Bordewisch
  */
-public class Dictionary
-{
-  /**
-   * Wörterbuch-Daten.
-   * Key-Feld enthält erstes Wort der Einträge.
-   * LinkedList enthält die Einträge, die mit dem Key-Wort anfangen.
-   */
-  Map<String,LinkedList<Entry>> dictionary;
-
-  /**
-   * Liste mit Wörtern, die nicht als Key hinzugefügt werden sollen
-   */
-  TreeSet<String> blacklist;
-
-
-  /**
-   * Gibt Anzahl der Wörtern im längsten Eintrag des Wörterbuchs aus.
-   */
-  int maxEntrySize;
-
-  /**
-   * Gibt Wert an, ab dem die relative Ähnlickeit als "Match" gesehen wird.
-   */
-  public final float MATCH_VALUE = 0.85f;
-
-  /**
-   * Initialisiert leeres Wörterbuch mit leerer Blacklist.
-   */
-  public Dictionary()
-  {
-    dictionary = new TreeMap<String,LinkedList<Entry>>(new WordComparator());
-    maxEntrySize = 0;
-    blacklist = new TreeSet<>();
-  }
-  /**
-   * Initialisiert leeres Wörterbuch. Blacklist wird mit parameter gefüllt.
-   * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
-   */
-  public Dictionary(TreeSet<String> blacklist)
-  {
-    dictionary = new TreeMap<String,LinkedList<Entry>>(new WordComparator());
-    maxEntrySize = 0;
-    this.blacklist = blacklist;
-  }
-
-
-  /**
-   * Initialisert Wörterbuch mit übergebenen Einträgen.
-   * @param entry Einträge, ein Eintrag pro Array-Feldeintrag
-   * @param category mit den Einträgen assoziierte Kategorie
-   * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
-   */
-  public Dictionary(String entry, String category, TreeSet<String> blacklist)
-  {
-    this(blacklist);
-    add(entry, category);
-  }
-
-
-  /**
-   * Initialisert Wörterbuch mit übergebenen Einträgen und der Kategorie.
-   * @param  entries Einträge, ein Eintrag pro Array-Feldeintrag
-   * @param category mit den Einträgen assoziierte Kategorie
-   * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
-   */
-  public Dictionary(String[] entries, String category, TreeSet<String> blacklist)
-  {
-    this(blacklist);
-    add(entries, category);
-  }
-
-
-  /**
-   * Gibt die benutzte HashMap des Wörterbuchs aus.
-   * @return Wörterbuch
-   */
-  public Map<String,LinkedList<Entry>> getDictionary()
-  {
-    return dictionary;
-  }
-
-
-  /**
-   * Fügt Einträge und Kategorie zu dem Wörterbuch hinzu
-   * @param  entryAndCategory Array, in dem der alle Feldwerte Einträge sind, außer der letzte, welcher die Kategorie angibt
-   */
-  public void add(String[] entryAndCategory)
-  {
-    String[] entry = new String[entryAndCategory.length-1];
-    for(int i=0;i<entry.length;i++)
-    {
-      entry[i] = entryAndCategory[i];
-    }
-    add(entry, entryAndCategory[entryAndCategory.length-1]);
-  }
-
-
-  /**
-   * Fügt übergebene Einträge zum Wörterbuch hinzu.
-   * @param entries Einträge, ein Eintrag pro Array-Feldeintrag
-   * @param category mit den Einträgen assoziierte Kategorie
-   */
-  public void add(String[] entries, String category)
-  {
-    for(String entry : entries)
-      add(entry, category);
-  }
-
-
-  /**
-   * Fügt einzelnen Eintrag zum Wörterbuch hinzu.
-   * @param entryStr Eintrag, der hinzugefügt werden soll
-   * @param category mit den Einträgen assoziierte Kategorie
-   */
-  public void add(String entryStr, String category)
-  {
-    Entry entry;
-    switch(category) {
-      case "Person":
-        entry = new PersonEntry(entryStr, category);
-        break;
-      case "Organisation":
-        entry = new OrganisationEntry(entryStr, category);
-        break;
-      case "Ort":
-        entry = new LocationEntry(entryStr, category);
-        break;
-      default:
-        System.out.println(String.format("Konnte nicht eingefügt werden, Kategorie %s unbekannt.", category));
-        return;
-    }
-    for(String entryKey : entry.getKeys()) {
-      if(!blacklist.contains(entryKey) && !entryKey.equals("")) { //Blacklist-Wörter & leere Wörter abfangen
-        if (dictionary.containsKey(entryKey)) //erstes Wort als Schlüssel im Wörterbuch
-        {
-          dictionary.get(entryKey).add(entry);
-        } else //erstes Wort des Eintrags nicht im Wörterbuch
-        {
-          //erstelle neue Liste von Einträgen und füge sie zum Wörterbuch hinzu
-          LinkedList<Entry> followWords = new LinkedList<>();
-          followWords.add(entry);
-          dictionary.put(entryKey, followWords);
-        }
-      }
-    }
-    updateMaxEntrySize(entry.size());
-  }
-
-
-  /**
-   * Gibt true zurück, wenn übergebenes Wort als Key (erstes Wort) im Wörterbuch steht.
-   * @param word Wort, das überprüft werden soll
-   * @return true, wenn Wort im Wörterbuch, false sonst
+public class Dictionary {
+    /**
+     * Wörterbuch-Daten.
+     * Key-Feld enthält erstes Wort der Einträge.
+     * LinkedList enthält die Einträge, die mit dem Key-Wort anfangen.
      */
-  public boolean contains(String word)
-{
-  return dictionary.containsKey(word);
-}
+    Map<String, LinkedList<Entry>> dictionary;
+
+    /**
+     * Liste mit Wörtern, die nicht als Key hinzugefügt werden sollen
+     */
+    TreeSet<String> blacklist;
 
 
-  /**
-   * Gibt Match zurück, wenn ein Eintrag mit den ersten Wörtern des Satzes
-   * übereinstimmt.
-   * @param sentences Satz, der auf Übereinstimmung geprüft werden soll
-   * @return Match, wenn gefunden, sonst null
-   */
-  public Match findEntryMatch(String sentences)
-  {
-    String[] sentencesSplit = sentences.split(" ");
-    LinkedList<String> sentencesList = new LinkedList<String>();
-    for(int i=0;i<sentencesSplit.length;i++)
-    {
-      sentencesList.add(sentencesSplit[i]);
+    /**
+     * Gibt Anzahl der Wörtern im längsten Eintrag des Wörterbuchs aus.
+     */
+    int maxEntrySize;
+
+    /**
+     *
+     */
+    boolean personFlag;
+
+    /**
+     * Initialisiert leeres Wörterbuch mit leerer Blacklist.
+     */
+    public Dictionary(boolean personFlag) {
+        this.personFlag = personFlag;
+        dictionary = new TreeMap<>(new WordComparator());
+        maxEntrySize = 0;
+        blacklist = new TreeSet<>(new WordComparator());
     }
-    return findEntryMatch(sentencesList);
-  }
+
+    /**
+     * Initialisiert leeres Wörterbuch. Blacklist wird mit parameter gefüllt.
+     *
+     * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
+     */
+    public Dictionary(TreeSet<String> blacklist, boolean personFlag) {
+        this(personFlag);
+        this.blacklist.addAll(blacklist);
+    }
 
 
-  /**
-   * Gibt Match zurück, wenn ein Eintrag mit den ersten Wörtern des Satzes exakt
-   * übereinstimmt.
-   * @param sentencesList List einzelner Wörter des Satzes, der auf Übereinstimmung geprüft werden soll
-   * @return Match, wenn gefunden, sonst null
-   */
-  public Match findEntryMatch(LinkedList<String> sentencesList)
-  {
-    LinkedList<Entry> followWordList = dictionary.get(sentencesList.get(0));
-    TreeMap<Float, Match> matches = new TreeMap<>();
-    if(followWordList != null)
-    {
-      // Vergleiche jeden Eintrag im zum gefundenen Schlüssel
-      for(Entry followWords : followWordList)
-      {
-        Match match = followWords.compareTo(sentencesList);
-        if(match != null)
-        {
-          matches.put(match.getMatchValue(),match);
-          //System.out.println(String.format("Found match for %s: %s",sentencesList, match.getComparedPhrase() ));
+    /**
+     * Initialisert Wörterbuch mit übergebenen Einträgen.
+     *
+     * @param entry     Einträge, ein Eintrag pro Array-Feldeintrag
+     * @param category  mit den Einträgen assoziierte Kategorie
+     * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
+     */
+    public Dictionary(String entry, String category, TreeSet<String> blacklist, boolean personFlag) {
+        this(blacklist, personFlag);
+        add(entry, category);
+    }
+
+
+    /**
+     * Initialisert Wörterbuch mit übergebenen Einträgen und der Kategorie.
+     *
+     * @param entries   Einträge, ein Eintrag pro Array-Feldeintrag
+     * @param category  mit den Einträgen assoziierte Kategorie
+     * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
+     */
+    public Dictionary(String[] entries, String category, TreeSet<String> blacklist, boolean personFlag) {
+        this(blacklist, personFlag);
+        add(entries, category);
+    }
+
+
+    /**
+     * Gibt die benutzte HashMap des Wörterbuchs aus.
+     *
+     * @return Wörterbuch
+     */
+    public Map<String, LinkedList<Entry>> getDictionary() {
+        return dictionary;
+    }
+
+
+    /**
+     * Fügt Einträge und Kategorie zu dem Wörterbuch hinzu
+     *
+     * @param entryAndCategory Array, in dem der alle Feldwerte Einträge sind, außer der letzte, welcher die Kategorie angibt
+     */
+    public void add(String[] entryAndCategory) {
+        String[] entry = new String[entryAndCategory.length - 1];
+        for (int i = 0; i < entry.length; i++) {
+            entry[i] = entryAndCategory[i];
         }
-      }
+        add(entry, entryAndCategory[entryAndCategory.length - 1]);
     }
-    if(matches.size()!=0) {
-      return matches.lastEntry().getValue();
-    } else {
-      return null;
+
+
+    /**
+     * Fügt übergebene Einträge zum Wörterbuch hinzu.
+     *
+     * @param entries  Einträge, ein Eintrag pro Array-Feldeintrag
+     * @param category mit den Einträgen assoziierte Kategorie
+     */
+    public void add(String[] entries, String category) {
+        for (String entry : entries)
+            add(entry, category);
     }
-  }
 
 
-  /**
-   * Gibt Anzahl der Wörter des größten Eintrags aus.
-   * @return Anzahl der Wörter des größten Eintrags
-   */
-  public int getMaxEntrySize()
-  {
-    return maxEntrySize;
-  }
-
-
-  /**
-   * Aktualisiert den Wert für die Anzahl der Wörter des größten Eintrags, falls nötig.
-   * @param newMax Anzahl der Wörter des neuen Eintrags
-   */
-  private void updateMaxEntrySize(int newMax)
-  {
-    if(maxEntrySize < newMax)
-    {
-      maxEntrySize = newMax;
-    }
-  }
-
-
-  /**
-   * Gibt eine String-Repräsentation dieses Wörterbuchs zurück.
-   * Die String-Repräsentation besteht aus Schlüsselwerten mit Listen von Einträgen, die mit "{}" umschlossen sind.
-   * Jedes Schlüsselwert-Listen-Paar wird mit "," getrennt.
-   * Für Repräsentation der Keys siehe {@link String#valueOf(Object)}.
-   * Für Repäsentation der Einträge siehe {@link Entry#toString()}
-   * @return String-Repräsentation dieses Wörterbuchs
-   */
-  @Override public String toString()
-  {
-    Iterator it = dictionary.entrySet().iterator();
-    String categoryString = "{\n";
-    while (it.hasNext()) {
-        Map.Entry pair = (Map.Entry)it.next();
-        categoryString += pair.getKey() + ": \n";
-        LinkedList<Entry> entries = (LinkedList<Entry>)pair.getValue();
-        for(Entry entry : entries)
-        {
-          categoryString += "\t" + entry + "\n";
+    /**
+     * Fügt einzelnen Eintrag zum Wörterbuch hinzu.
+     *
+     * @param entryStr Eintrag, der hinzugefügt werden soll
+     * @param category mit den Einträgen assoziierte Kategorie
+     */
+    public void add(String entryStr, String category) {
+        Entry entry;
+        switch (category) {
+            case "Person":
+                if (personFlag) {
+                    entry = new PersonEntry(entryStr, category);
+                } else {
+                    entry = new Entry(entryStr, category);
+                }
+                break;
+            case "Organisation":
+                entry = new OrganisationEntry(entryStr, category);
+                break;
+            case "Ort":
+                entry = new LocationEntry(entryStr, category);
+                break;
+            default:
+                System.out.println(String.format("Konnte nicht eingefügt werden, Kategorie %s unbekannt.", category));
+                return;
         }
-        categoryString+=",";
+        for (String entryKey : entry.getKeys()) {
+            if (!blacklist.contains(entryKey) && !entryKey.equals("")) { //Blacklist-Wörter & leere Wörter abfangen
+                if (dictionary.containsKey(entryKey)) //erstes Wort als Schlüssel im Wörterbuch
+                {
+                    dictionary.get(entryKey).add(entry);
+                } else //erstes Wort des Eintrags nicht im Wörterbuch
+                {
+                    //erstelle neue Liste von Einträgen und füge sie zum Wörterbuch hinzu
+                    LinkedList<Entry> followWords = new LinkedList<>();
+                    followWords.add(entry);
+                    dictionary.put(entryKey, followWords);
+                }
+            }
+        }
+        updateMaxEntrySize(entry.size());
     }
-    categoryString+="}";
-    return categoryString;
-  }
 
 
-  /**
-   * Gibt Größe des Wörterbuchs (Anzahl der Schlüsseleinträge) zurück.
-   * @return Anzahl der Schlüsselwörter im Wörterbuch
-   */
-  public int size()
-  {
-    return dictionary.size();
-  }
+    /**
+     * Gibt true zurück, wenn übergebenes Wort als Key (erstes Wort) im Wörterbuch steht.
+     *
+     * @param word Wort, das überprüft werden soll
+     * @return true, wenn Wort im Wörterbuch, false sonst
+     */
+    public boolean contains(String word) {
+        return dictionary.containsKey(word);
+    }
+
+    /**
+     * Gibt alle Entries zu einem Übergebenen Wort zurück
+     *
+     * @param word zu untersuchendes Wort
+     * @return Liste der Einträge, die dieses Wort (als erstes Wort) enthalten.
+     */
+    public LinkedList<Entry> getEntries(String word) {
+        return dictionary.get(word);
+    }
 
 
-  /**
-   * Hauptsächlich als Test-Methode für diese Klasse gedacht.
-   * Enthält hauptsächlich Beispiele, die die Methoden dieser Klasse testen sollen.
-   * @param args obsolete
-   */
-  public static void main(String[] args)
-  {
-    Dictionary dict = new Dictionary();
+    /**
+     * Gibt Match zurück, wenn ein Eintrag mit den ersten Wörtern des Satzes
+     * übereinstimmt.
+     *
+     * @param sentences Satz, der auf Übereinstimmung geprüft werden soll
+     * @return Match, wenn gefunden, sonst null
+     */
+    public Match findEntryMatch(String sentences) {
+        String[] sentencesSplit = sentences.split(" ");
+        LinkedList<String> sentencesList = new LinkedList<String>();
+        for (int i = 0; i < sentencesSplit.length; i++) {
+            sentencesList.add(sentencesSplit[i]);
+        }
+        return findEntryMatch(sentencesList);
+    }
+
+
+    /**
+     * Gibt Match zurück, wenn ein Eintrag mit den ersten Wörtern des Satzes exakt
+     * übereinstimmt.
+     *
+     * @param sentencesList List einzelner Wörter des Satzes, der auf Übereinstimmung geprüft werden soll
+     * @return Match, wenn gefunden, sonst null
+     */
+    public Match findEntryMatch(LinkedList<String> sentencesList) {
+        LinkedList<Entry> followWordList = dictionary.get(sentencesList.get(0));
+        TreeMap<Float, Match> matches = new TreeMap<>();
+        if (followWordList != null) {
+            // Vergleiche jeden Eintrag im zum gefundenen Schlüssel
+            for (Entry followWords : followWordList) {
+                Match match = followWords.compareTo(sentencesList);
+                if (match != null) {
+                    boolean betterMatch = false;
+                    if (matches.containsKey(match.getMatchValue())) {
+                        Match compareMatch = matches.get(match.getMatchValue());
+                        if (compareMatch.getNumberOfWords() > match.getNumberOfWords()) {
+                            betterMatch = true;
+                        }
+                    }
+                    if (!betterMatch) {
+                        matches.put(match.getMatchValue(), match);
+                    }
+                }
+            }
+        }
+        if (matches.size() != 0) {
+            return matches.lastEntry().getValue();
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * Gibt Anzahl der Wörter des größten Eintrags aus.
+     *
+     * @return Anzahl der Wörter des größten Eintrags
+     */
+    public int getMaxEntrySize() {
+        return maxEntrySize;
+    }
+
+
+    /**
+     * Aktualisiert den Wert für die Anzahl der Wörter des größten Eintrags, falls nötig.
+     *
+     * @param newMax Anzahl der Wörter des neuen Eintrags
+     */
+    private void updateMaxEntrySize(int newMax) {
+        if (maxEntrySize < newMax) {
+            maxEntrySize = newMax;
+        }
+    }
+
+
+    /**
+     * Gibt eine String-Repräsentation dieses Wörterbuchs zurück.
+     * Die String-Repräsentation besteht aus Schlüsselwerten mit Listen von Einträgen, die mit "{}" umschlossen sind.
+     * Jedes Schlüsselwert-Listen-Paar wird mit "," getrennt.
+     * Für Repräsentation der Keys siehe {@link String#valueOf(Object)}.
+     * Für Repäsentation der Einträge siehe {@link Entry#toString()}
+     *
+     * @return String-Repräsentation dieses Wörterbuchs
+     */
+    @Override
+    public String toString() {
+        Iterator it = dictionary.entrySet().iterator();
+        String categoryString = "{\n";
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            categoryString += pair.getKey() + ": \n";
+            LinkedList<Entry> entries = (LinkedList<Entry>) pair.getValue();
+            for (Entry entry : entries) {
+                categoryString += "\t" + entry + "\n";
+            }
+            categoryString += ",";
+        }
+        categoryString += "}";
+        return categoryString;
+    }
+
+
+    /**
+     * Gibt Größe des Wörterbuchs (Anzahl der Schlüsseleinträge) zurück.
+     *
+     * @return Anzahl der Schlüsselwörter im Wörterbuch
+     */
+    public int size() {
+        return dictionary.size();
+    }
+
+
+    /**
+     * Hauptsächlich als Test-Methode für diese Klasse gedacht.
+     * Enthält hauptsächlich Beispiele, die die Methoden dieser Klasse testen sollen.
+     *
+     * @param args obsolete
+     */
+    public static void main(String[] args) {
+        Dictionary dict = new Dictionary(true);
     /*dict.add("1. FC Köln", "Organisation");
     dict.add("1. FC Bayern München", "Organisation");
     dict.add("Club der Denker", "Organisation");
@@ -311,11 +326,11 @@ public class Dictionary
     System.out.println("Schröders Geburtstag war großartig || " + dict.findEntryMatch("Schröders Geburtstag war großartig"));
     System.out.println("Schroders Geburtstag war großartig || " + dict.findEntryMatch("Schroders Geburtstag war großartig"));
     System.out.println("====================");*/
-    dict.add("Kurt Mathias von Leers", "Person");
-    dict.add("Kurt Tittel","Person");
-    dict.add("Kurt Biedenkopf", "Person");
-    String satz = "Kurt Biedenkopf die Vorschläge für eine Reform der Unternehmensmitbestimmung unterbreiten sollte.";
-    System.out.println(satz + " || " + dict.findEntryMatch(satz));
-  }
+        dict.add("Angela Merkel", "Person");
+        dict.add("Merkur", "Ort");
+        String satz = "Merkels Bund";
+        System.out.println(dict.getEntries("Merkels"));
+        System.out.println(satz + " || " + dict.findEntryMatch(satz));
+    }
 
 }

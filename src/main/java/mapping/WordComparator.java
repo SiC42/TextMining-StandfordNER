@@ -9,7 +9,7 @@ import java.util.Comparator;
  * Vergleicht Wörter nicht auf "exact match", sondern vergleicht die "Prefixe" der Wörter (i.e. Nicht-Suffixe)
  * auf "exact match" und die Suffix-Wörter nur auf Ähnlichkeit.
  */
-public class WordComparator implements Comparator<String>{
+public class WordComparator implements Comparator<String> {
 
     /**
      * Maximale Längendifferenz beim Vergleich von zwei Strings.
@@ -29,13 +29,14 @@ public class WordComparator implements Comparator<String>{
 
     /**
      * Vergleicht zwei Strings auf Ähnlichkeit.
+     *
      * @param s1 erster zu vergleichender String
      * @param s2 zweiter zu vergleichender String
      * @return 0 wenn ähnlich, sonst die herkömmliche String-Rückgabe der Werte {@link String#compareTo(String)}
      */
-    @Override public int compare(String s1, String s2)
-    {
-        if(getSuffixSimilarity(s1, s2)>MIN_MATCH_VALUE) {
+    @Override
+    public int compare(String s1, String s2) {
+        if (getSuffixSimilarity(s1, s2) > MIN_MATCH_VALUE) {
             return 0;
         }
         return s1.compareTo(s2);
@@ -43,23 +44,23 @@ public class WordComparator implements Comparator<String>{
 
     /**
      * Gibt Ähnlichkeitsgrad der Suffixe zurück.
+     *
      * @param s1 erster zu vergleichender String
      * @param s2 zweiter zu vergleichender String
      * @return Ähnlichkeitsgrad der Suffixe
      */
-    public float getSuffixSimilarity(String s1, String s2)
-    {
+    public float getSuffixSimilarity(String s1, String s2) {
         return getSimilarity(s1, s2, SUFFIX_SIZE);
     }
 
     /**
      * Gibt Ähnlichkeitsgrad der Wörter zurück.
+     *
      * @param s1 erster zu vergleichender String
      * @param s2 zweiter zu vergleichender String
      * @return Ähnlichkeitsgrad der Wörter
      */
-    public float getWordSimilarity(String s1, String s2)
-    {
+    public float getWordSimilarity(String s1, String s2) {
         int maxWordLen = Math.max(s1.length(), s2.length());
         return getSimilarity(s1, s2, maxWordLen);
     }
@@ -67,23 +68,19 @@ public class WordComparator implements Comparator<String>{
     /**
      * Eigentliche Ähnlichkeitsgrad-Funktion.
      * Prüft zunächst Prefix auf Gleichheit und anschließend Suffix auf Ähnlichkeit.
-     * @param s1 erster zu vergleichender String
-     * @param s2 zweiter zu vergleichender String
+     *
+     * @param s1               erster zu vergleichender String
+     * @param s2               zweiter zu vergleichender String
      * @param lengthComparison Länge, die beim Ähnlichkeitsgrad einbezogen werden soll
-     * @return Ähnlichkeitsgrad der Wörter
      * @return
      */
-    private float getSimilarity(String s1, String s2, int lengthComparison)
-    {
-        int minWordLen = Math.min(s1.length(),s2.length());
-        if(Math.abs(s1.length() - s2.length()) < MAX_LEN_DIFF) {
-            if(minWordLen < SUFFIX_SIZE)
-            {
-                if(s1.equals(s2))
-                {
+    private float getSimilarity(String s1, String s2, int lengthComparison) {
+        int minWordLen = Math.min(s1.length(), s2.length());
+        if (Math.abs(s1.length() - s2.length()) < MAX_LEN_DIFF) {
+            if (minWordLen < SUFFIX_SIZE) {
+                if (s1.equals(s2)) {
                     return 1;
-                }
-                else {
+                } else {
                     return 0;
                 }
             }
@@ -93,8 +90,8 @@ public class WordComparator implements Comparator<String>{
             String prefix2 = s2.substring(0, prefixSize);
             if (prefix1.equals(prefix2)) {
                 StringDistance metric = StringDistances.levenshtein();
-                String suffix1 = s1.substring(prefixSize + 1);
-                String suffix2 = s2.substring(prefixSize + 1);
+                String suffix1 = s1.substring(prefixSize);
+                String suffix2 = s2.substring(prefixSize);
                 float distance = metric.distance(suffix1, suffix2);
                 float relDistance = 1.0f - (distance / lengthComparison);
                 return relDistance;

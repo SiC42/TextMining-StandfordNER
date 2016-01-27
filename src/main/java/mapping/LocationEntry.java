@@ -24,11 +24,11 @@ public class LocationEntry extends Entry {
      * Erstellt Liste und ruft
      * {@link #LocationEntry(LinkedList, String) Listen-Kontruktor} auf.
      *
-     * @param words Wort, das als Eintrag hinzugefügt werden soll
+     * @param words    Wort, das als Eintrag hinzugefügt werden soll
      * @param category Kategorie des einzutragenden Wortes
      */
     public LocationEntry(String words, String category) {
-        super(words,category);
+        super(words, category);
     }
 
 
