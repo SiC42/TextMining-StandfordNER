@@ -65,7 +65,7 @@ public class Main {
     }
 
     /**
-     *
+     *Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen) führt dann Python Script aus um Klatext aus dem XML-extrakt zu gewinnen
      */
     private static void optionWikiExtraction() {
             Scanner scanner = new Scanner(System.in);
@@ -102,15 +102,19 @@ public class Main {
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
             System.out.println("XML-Bereinigung beendet. Dauer des ganzen Prozesses:  " + elapsedTime / 1000f + " sec\n");
-
-        } catch (CompressorException ex) {
+        } catch (CompressorException ex) { //Datei muss im .bz2 Format vorliegen
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-
+    /**
+     * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit Vergleichsdaten gemappt
+     * @throws UnsupportedEncodingException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     private static void optionGenerateTrainingsformat() throws UnsupportedEncodingException, FileNotFoundException, IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Bitte den Speicherort des Klartextes angeben, 'd' für default");
@@ -143,7 +147,7 @@ public class Main {
      * Verarbeitet Option 'b'
      * @throws UnsupportedEncodingException
      * @throws FileNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     private static void optionGenerateTrainingsformat(String source_PlainText, String personEntryScan) throws UnsupportedEncodingException, FileNotFoundException, IOException {
         switch (personEntryScan) {
@@ -174,8 +178,8 @@ public class Main {
     }
 
     /**
-     * Verarbeitet Option 'c'
-     * @throws Exception 
+     * Erstellt den Klassifikator für den Stanford NER
+     * @throws Exception
      */
     private static void optionCreateClassifier() throws Exception {
         Scanner scanner = new Scanner(System.in);
@@ -209,7 +213,6 @@ public class Main {
 
     /**
      * Hauptprogramm zur Steuerung der Unterprogramme
-     *
      */
     public static void contextMenu() throws Exception {
         Scanner scanner = new Scanner(System.in);

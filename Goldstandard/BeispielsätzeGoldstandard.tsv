@@ -19,6 +19,7 @@ US-Vorwahlen	O
 versuchte	O
 sie	O
 nun	O
+,	O
 ihn	O
 beim	O
 Thema	O
@@ -32,7 +33,7 @@ um	O
 die	O
 Flüchtlingspolitik	O
 geht	O
-0	O
+,	O
 dann	O
 wird	O
 der	O
@@ -45,19 +46,11 @@ zunehmend	O
 rauer	O
 .	O
 Ex-CSU-Chef	O
-<<<<<<< HEAD
 Stoiber	PERSON
 setzt	O
 Kanzlerin	PERSON
 Merkel	PERSON
 eine	O
-=======
-Stoiber	O
-setzt	PERSON
-Kanzlerin	O
-Merkel	O
-eine	PERSON
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 Frist	O
 bis	O
 Ende	O
@@ -73,11 +66,7 @@ der	O
 Flüchtlingskrise	O
 her	O
 .	O
-<<<<<<< HEAD
-SPD-Chef  O
-=======
 SPD-Chef	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 Sigmar	PERSON
 Gabriel	PERSON
 erhöht	O
@@ -94,7 +83,7 @@ müssen	O
 abgelehnte	O
 Asylbewerber	O
 zurücknehmen	O
-0	O
+,	O
 sonst	O
 drohe	O
 eine	O
@@ -121,7 +110,7 @@ die	O
 Täter	O
 eine	O
 Feuerwerksbatterie	O
-0	O
+,	O
 wie	O
 Staatsanwaltschaft	ORGANISATION
 und	O
@@ -137,6 +126,7 @@ ein	O
 Staat	O
 in	O
 Südasien	ORT
+,	O
 der	O
 den	O
 größten	O
@@ -153,6 +143,7 @@ die	O
 natürliche	O
 Nordgrenze	O
 Indiens	ORT
+,	O
 im	O
 Süden	O
 umschließt	O
@@ -202,6 +193,7 @@ New	ORT
 York	ORT
 waren	O
 fantastisch	O
+,	O
 mit	O
 Ursula	PERSON
 Karven	PERSON
@@ -242,13 +234,13 @@ bei	O
 Henkel	ORGANISATION
 seinen	O
 Abschied	O
-0	O
+,	O
 ``	O
 auf	O
 eigenen	O
 Wunsch	O
 ''	O
-0	O
+,	O
 wie	O
 es	O
 heißt	O
@@ -262,7 +254,7 @@ zur	O
 Deutschlandtochter	O
 des	O
 US-Vermögensverwalters	O
-Blackrock	ORGANISATION
+Blackrock	O
 .	O
 Kristina	PERSON
 Strake	PERSON
@@ -303,13 +295,13 @@ Klopp	PERSON
 -LRB-	O
 48	O
 -RRB-	O
-0	O
+,	O
 Wayne	PERSON
 Rooney	PERSON
 -LRB-	O
 30	O
 -RRB-	O
-0	O
+,	O
 Benedikt	PERSON
 Höwedes	PERSON
 -LRB-	O
@@ -376,8 +368,9 @@ profitieren	O
 allen	O
 voran	O
 der	O
-Stuttgarter	ORT
+Stuttgarter	O
 Autobauer	O
+.	O
 Hollywoodstar	O
 Leonardo	PERSON
 DiCaprio	PERSON
@@ -387,6 +380,7 @@ nie	O
 einen	O
 Oscar	O
 gewonnen	O
+.	O
 Eine	O
 im	O
 Cospudener	ORT
@@ -413,19 +407,11 @@ besorgt	O
 Winterliches	O
 Familienglück	O
 im	O
-<<<<<<< HEAD
 Leipziger	ORGANISATION
 Zoo	ORGANISATION
 :	O
 Tüpfelhyänen-Weibchen	O
-Dara	PERSON
-=======
-Leipziger	ORT
-Zoo	ORT
-:	O
-Tüpfelhyänen-Weibchen	O
 Dara	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 hat	O
 vor	O
 zwölf	O
@@ -473,7 +459,7 @@ wie	O
 einst	O
 die	O
 SED	ORGANISATION
-0	O
+,	O
 in	O
 Magdeburg	ORT
 seien	O
@@ -484,7 +470,7 @@ Januar	O
 1945	O
 bis	O
 zu	O
-16000	O
+16.000	O
 Menschen	O
 durch	O
 Bomben	O
@@ -514,14 +500,10 @@ dem	O
 Schafott	O
 .	O
 Im	O
-<<<<<<< HEAD
 England	ORT
-=======
-England	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 Heinrichs	PERSON
 VIII	PERSON
-.	PERSON
+.	O
 bedeutete	O
 das	O
 Vertrauen	O
@@ -541,11 +523,7 @@ fordert	O
 den	O
 Rückzug	O
 der	O
-<<<<<<< HEAD
 Kanzlerin	PERSON
-=======
-Kanzlerin	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 .	O
 In	O
 Nordamerika	ORT
@@ -554,7 +532,7 @@ viel	O
 Kapital	O
 in	O
 Unternehmen	O
-0	O
+,	O
 die	O
 an	O
 neuer	O
@@ -592,11 +570,7 @@ Café	O
 und	O
 Ladenbesitzer	O
 im	O
-<<<<<<< HEAD
 walisischen	ORT
-=======
-walisischen	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 Crickhowell	ORT
 haben	O
 die	O
@@ -614,7 +588,7 @@ liebte	O
 Jimmy	PERSON
 Wales	PERSON
 Lexika	O
-0	O
+,	O
 als	O
 Erwachsener	O
 gründete	O
@@ -676,7 +650,7 @@ zum	O
 weltweit	O
 wichtigsten	O
 Filmpreis	O
-0	O
+,	O
 dem	O
 Oscar	O
 .	O
@@ -698,7 +672,7 @@ Pratheep	PERSON
 dankte	O
 allen	O
 Menschen	O
-0	O
+,	O
 die	O
 ihn	O
 in	O
@@ -756,7 +730,7 @@ der	O
 Anbieter	O
 von	O
 Endgeräten	O
-0	O
+,	O
 Lösungen	O
 und	O
 Services	O
@@ -770,7 +744,7 @@ Ulrich	PERSON
 Klink	PERSON
 hatte	O
 Mühe	O
-0	O
+,	O
 alle	O
 Teilnehmer	O
 in	O
@@ -802,15 +776,9 @@ der	O
 Verband	ORGANISATION
 öffentlicher	ORGANISATION
 Verkehr	ORGANISATION
-<<<<<<< HEAD
 -LRB-	ORGANISATION
 VöV	ORGANISATION
 -RRB-	ORGANISATION
-=======
--LRB-	O
-VöV	ORGANISATION
--RRB-	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 auf	O
 den	O
 nächsten	O
@@ -827,6 +795,7 @@ waren	O
 auch	O
 die	O
 Verlierer	O
+,	O
 das	O
 Team	O
 der	O
@@ -858,7 +827,7 @@ forderten	O
 Rüttgers	PERSON
 bereits	O
 auf	O
-0	O
+,	O
 eine	O
 Frau	O
 als	O
@@ -883,9 +852,11 @@ Ohren	O
 .	O
 Der	O
 geht	O
+,	O
 bei	O
 aller	O
 Loyalität	O
+,	O
 eher	O
 auf	O
 persönliche	O
@@ -902,12 +873,14 @@ Söhne	O
 wünscht	O
 sich	O
 Arzu	PERSON
+,	O
 die	O
 selbst	O
 keinen	O
 Beruf	O
 erlernt	O
 hat	O
+,	O
 einen	O
 guten	O
 Job	O
@@ -963,7 +936,7 @@ nur	O
 einmal	O
 Zweite	O
 geworden	O
-0	O
+,	O
 Anfang	O
 des	O
 Jahres	O
@@ -996,12 +969,8 @@ bunten	O
 Feuerwerk	O
 wird	O
 das	O
-Cottbuser	ORT
-<<<<<<< HEAD
-Stadtfest	ORT
-=======
+Cottbuser	O
 Stadtfest	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 am	O
 Sonntag	O
 ausklingen	O
@@ -1025,7 +994,7 @@ Hoffnungsträger	O
 bleibt	O
 so	O
 Massa	PERSON
-0	O
+,	O
 der	O
 in	O
 Shanghai	ORT
@@ -1094,7 +1063,7 @@ das	O
 Unmögliche	O
 möglich	O
 machen	O
-0	O
+,	O
 mehr	O
 Kosten	O
 und	O
@@ -1114,11 +1083,7 @@ wird	O
 die	O
 21-Jährige	O
 in	O
-<<<<<<< HEAD
 München	ORT
-=======
-München	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 bei	O
 Knie-Experten	O
 Dr.	PERSON
@@ -1129,13 +1094,12 @@ operiert	O
 Einer	O
 der	O
 Lehrer	O
-<<<<<<< HEAD
+,	O
 Tilo	PERSON
-=======
-Tilo	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 Böttcher	PERSON
+,	O
 erzählte	O
+,	O
 wie	O
 er	O
 damals	O
@@ -1224,6 +1188,7 @@ aufbauen	O
 Max	PERSON
 hatte	O
 ihn	O
+,	O
 wie	O
 einst	O
 auch	O
@@ -1231,6 +1196,7 @@ seine	O
 vierjährige	O
 Schwester	O
 Elisa	PERSON
+,	O
 zur	O
 Geburt	O
 bekommen	O
@@ -1272,7 +1238,7 @@ Chile	ORGANISATION
 -LRB-	O
 PUC	ORGANISATION
 -RRB-	O
-0	O
+,	O
 der	O
 römisch-katholischen	O
 Universität	O
@@ -1304,6 +1270,7 @@ tourt	O
 Aguilera	PERSON
 durch	O
 Asien	ORT
+,	O
 Australien	ORT
 und	O
 Neuseeland	ORT
@@ -1333,11 +1300,7 @@ Gilad	PERSON
 Schalit	PERSON
 in	O
 den	O
-<<<<<<< HEAD
 Gazastreifen	ORT
-=======
-Gazastreifen	O
->>>>>>> c51d31ff61d750bc71a516637d0efe647e77182e
 verschleppt	O
 worden	O
 .	O
@@ -1349,7 +1312,7 @@ Taiwans	O
 Hauptstadt	O
 Taipeh	ORT
 spürbar	O
-0	O
+,	O
 Schäden	O
 wurden	O
 zunächst	O
@@ -1385,7 +1348,7 @@ Baden-Württemberg	ORT
 werden	O
 .	O
 Die	O
-Deutschen	ORGANISATION
+Deutsche	ORGANISATION
 Bahn	ORGANISATION
 AG	ORGANISATION
 hat	O
@@ -1412,7 +1375,7 @@ die	O
 Kanadier	O
 sind	O
 offen	O
-0	O
+,	O
 entspannt	O
 und	O
 ungemein	O
@@ -1439,16 +1402,17 @@ Vereinigte	ORT
 Staaten	ORT
 von	ORT
 Amerika	ORT
+,	O
 Unter	ORT
 den	ORT
 Linden	ORT
-0	O
+,	O
 Neuer	ORT
 Markt	ORT
-0	O
+,	O
 Hohe	ORT
 Tatra	ORT
-0	O
+,	O
 Sächsische	ORT
 Schweiz	ORT
 oder	O
@@ -1463,7 +1427,7 @@ muss	O
 Kohr	PERSON
 nach	O
 Salzburg	ORT
-0	O
+,	O
 um	O
 sein	O
 Visum	O
@@ -1473,12 +1437,12 @@ Emigration	O
 nach	O
 New	ORT
 York	ORT
-0	O
+,	O
 Vereinigte	ORT
 Staaten	ORT
 von	ORT
 Amerika	ORT
-0	O
+,	O
 zu	O
 erhalten	O
 und	O
@@ -1496,7 +1460,7 @@ Was	O
 kann	O
 Berlin	ORT
 tun	O
-0	O
+,	O
 um	O
 diese	O
 Entwicklung	O
@@ -1509,12 +1473,12 @@ kein	O
 Lösegeld	O
 .	O
 Ohne	O
-Kurden	ORGANISATION
+Kurden	O
 und	O
-Sunniten	ORGANISATION
+Sunniten	O
 können	O
 die	O
-Schiiten	ORGANISATION
+Schiiten	O
 keine	O
 Regierung	O
 bilden	O
