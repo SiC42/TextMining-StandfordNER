@@ -12,12 +12,16 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mapping.Mapping;
+import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.CompressorException;
 import parsetitlenorm.ParseTitleNorm;
 import parsing.GetDataFromWikiDump;
+import org.apache.commons.cli.*;
+
 
 /**
  * Hauptprogramm
@@ -61,10 +65,9 @@ public class Main {
     }
 
     /**
-     * verarbeitet Option 'a'
+     *
      */
     private static void optionWikiExtraction() {
-        try {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Bitte den Ort des Wikipediadumps angeben, 'd' für default");
             String source_wikipediaDump = scanner.next();
@@ -77,8 +80,18 @@ public class Main {
             int organisation_articles = Integer.parseInt(scanner.next());
             System.out.println("Anzahl der Orts-Artikel ?");
             int places_articles = Integer.parseInt(scanner.next());
-
-            //System.out.println("Ihre Angaben: \n Speicherort: " + source_wikipediaDump + "\n Personen-Artikel: " + person_articles + "\n Organisationen-Artikel: " + organisation_articles + "\n Orts-Artikel: " + places_articles);
+            optionWikiExtraction(source_wikipediaDump, person_articles, organisation_articles, places_articles);
+    }
+    /**
+     * verarbeitet Option 'a'
+     */
+    private static void optionWikiExtraction(
+                String source_wikipediaDump,
+                int person_articles,
+                int organisation_articles,
+                int places_articles)
+    {
+        try {
             long startTime = System.currentTimeMillis();
             GetDataFromWikiDump data = new GetDataFromWikiDump(source_wikipediaDump, places_articles, person_articles, organisation_articles);
             data.getData();
@@ -97,12 +110,7 @@ public class Main {
         }
     }
 
-    /**
-     * Verarbeitet Option 'b'
-     * @throws UnsupportedEncodingException
-     * @throws FileNotFoundException
-     * @throws IOException 
-     */
+
     private static void optionGenerateTrainingsformat() throws UnsupportedEncodingException, FileNotFoundException, IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Bitte den Speicherort des Klartextes angeben, 'd' für default");
@@ -117,13 +125,32 @@ public class Main {
                     + "a) ... als solche betrachtet werden (es wird nach Vor- und Nachnamen unterschieden)?\n"
                     + "b) ... generalisiert werden (Personen werden nur als ganze Namen betrachtet)?");
             personEntryScan = scanner.next();
-        } while(!personEntryScan.equals("a") && !personEntryScan.equals("b"));
-        switch(personEntryScan)
-        {
+        } while (!personEntryScan.equals("a") && !personEntryScan.equals("b"));
+        switch (personEntryScan) {
             case "a":
-                Mapping.startMapping(source_PlainText, true);
+                personEntryScan = "true";
                 break;
             case "b":
+                personEntryScan = "false";
+                break;
+            default:
+        }
+        optionGenerateTrainingsformat(source_PlainText, personEntryScan);
+    }
+
+
+    /**
+     * Verarbeitet Option 'b'
+     * @throws UnsupportedEncodingException
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    private static void optionGenerateTrainingsformat(String source_PlainText, String personEntryScan) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+        switch (personEntryScan) {
+            case "true":
+                Mapping.startMapping(source_PlainText, true);
+                break;
+            case "false":
                 Mapping.startMapping(source_PlainText, false);
                 break;
             default:
@@ -183,9 +210,8 @@ public class Main {
     /**
      * Hauptprogramm zur Steuerung der Unterprogramme
      *
-     * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, ClassCastException, ClassNotFoundException, Exception {
+    public static void contextMenu() throws Exception {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String s = showMenu();
@@ -207,5 +233,103 @@ public class Main {
             }
 
         }
+    }
+
+    public static void main(String[] args)  throws Exception
+    {
+        Options options = new Options();
+        options.addOption("h", "help", false, "zeigt diese Hilfe an");
+        options.addOption("s", "source", true, "legt Source-Dateien für jeweiligen Prozess fest");
+        options.addOption("gp", "generalizePerson", false, "legt fest, ob Personen generalisiert werden");
+
+        OptionGroup oGroup = new OptionGroup();
+        oGroup.addOption(new Option(
+                "et",
+                "extractText",
+                true, //Anz Artikel
+                "extrahiert angegebene Anzahl an Artikeln als Klartext aus Wikidump"));
+
+        oGroup.addOption(new Option(
+                "ctd",
+                "createTrainingData",
+                false,
+                "taggt Klartext und erstellt Trainingsdaten für den NER"));
+        oGroup.addOption(new Option(
+                "cc",
+                "createClassifier",
+                false,
+                "erstellt aus Trainingsdaten einen Klartext"));
+        oGroup.addOption(new Option(
+                "cnd",
+                "createNameData",
+                false,
+                "erstellt aus der parseTitleNorm.txt die CSV-Dateien"));
+        oGroup.addOption(new Option(
+                "cm",
+                "contextMenu",
+                false,
+                "lässt diese Applikation über ein Kontext-Menü bedienen."));
+        options.addOptionGroup(oGroup);
+
+        CommandLineParser parser = new BasicParser();
+        CommandLine cmd;
+        HelpFormatter formatter = new HelpFormatter();
+        try {
+            String path;
+            cmd = parser.parse(options, args);
+            if (cmd.hasOption('h')) {
+                formatter.printHelp("Main", options);
+                return;
+            }
+            if(cmd.hasOption("et"))
+            {
+                if(cmd.hasOption("s"))
+                    path = cmd.getOptionValue("s");
+                else
+                    path = DEFAULT_PATH_WIKIDUMP;
+                System.out.println("|" + cmd.getOptionValue("et")+"|");
+                int noArticles = Integer.parseInt(cmd.getOptionValue("et"));
+                optionWikiExtraction(path, noArticles, noArticles, noArticles);
+            } else if(cmd.hasOption("ctd"))
+            {
+                if(cmd.hasOption("s"))
+                    path = cmd.getOptionValue("s");
+                else
+                    path = DEFAULT_PATH_PLAINTEXT;
+                String dontGeneralize;
+                if(cmd.hasOption("gp"))
+                    dontGeneralize = "false";
+                else
+                    dontGeneralize = "true";
+                optionGenerateTrainingsformat(path,dontGeneralize);
+            } else if(cmd.hasOption("cc"))
+            {
+                if(cmd.hasOption("s"))
+                    path = cmd.getOptionValue("s");
+                else
+                    path = DEFAULT_PATH_PROPERTY;
+                String[] arg = {"-prop", path};
+                CRFClassifier.main(arg);
+            } else if(cmd.hasOption("cnd")) //createNameData
+            {
+                if(cmd.hasOption("s"))
+                    path = cmd.getOptionValue("s");
+                else
+                    path = DEFAULT_PATH_TITLENORM;
+                String[] pathArray = {path};
+                ParseTitleNorm.main(pathArray);
+
+            } else if(cmd.hasOption("cm"))
+            {
+                contextMenu();
+            } else
+                contextMenu();
+
+        } catch (ParseException pvException) {
+            formatter.printHelp("Main", options);
+            System.out.println("Parse Fehler:\n" + pvException.getMessage());
+            return;
+        }
+
     }
 }
