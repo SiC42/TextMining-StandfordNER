@@ -61,7 +61,7 @@ public class Main {
     }
 
     /**
-     * verarbeitet Option 'a'
+     *Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen) führt dann Python Script aus um Klatext aus dem XML-extrakt zu gewinnen
      */
     private static void optionWikiExtraction() {
         try {
@@ -89,8 +89,7 @@ public class Main {
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
             System.out.println("XML-Bereinigung beendet. Dauer:  " + elapsedTime / 1000f + " sec\n");
-
-        } catch (CompressorException ex) {
+        } catch (CompressorException ex) { //Datei muss im .bz2 Format vorliegen
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -98,7 +97,7 @@ public class Main {
     }
 
     /**
-     * Verarbeitet Option 'b'
+     * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit Vergleichsdaten gemappt
      * @throws UnsupportedEncodingException
      * @throws FileNotFoundException
      * @throws IOException 
@@ -147,7 +146,7 @@ public class Main {
     }
 
     /**
-     * Verarbeitet Option 'c'
+     * Erstellt den Klassifikator für den Stanford NER
      * @throws Exception 
      */
     private static void optionCreateClassifier() throws Exception {
@@ -182,7 +181,6 @@ public class Main {
 
     /**
      * Hauptprogramm zur Steuerung der Unterprogramme
-     *
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, ClassCastException, ClassNotFoundException, Exception {
