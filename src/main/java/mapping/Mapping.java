@@ -105,7 +105,6 @@ public class Mapping {
             listToDict(DIR_RESSOURCE_CSV + "/" + FILE_PERSON_CSV);
             System.out.println("Wörterbuch gefüllt." +
                     "Anzahl der Einträge im Schlüssel: " + dict.size());
-            System.out.println(dict.getEntries("Merkel"));
 
 
             String line = "";

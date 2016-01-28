@@ -79,16 +79,16 @@ public class Main {
             int places_articles = Integer.parseInt(scanner.next());
 
             //System.out.println("Ihre Angaben: \n Speicherort: " + source_wikipediaDump + "\n Personen-Artikel: " + person_articles + "\n Organisationen-Artikel: " + organisation_articles + "\n Orts-Artikel: " + places_articles);
+            long startTime = System.currentTimeMillis();
             GetDataFromWikiDump data = new GetDataFromWikiDump(source_wikipediaDump, places_articles, person_articles, organisation_articles);
             data.getData();
 
             System.out.println("Starte XML bereinigung");
             //Ausführen des Python-Scripts WikiExtractor.py wie auf Kommandozeile
-            long startTime = System.currentTimeMillis();
             Runtime.getRuntime().exec("python2 WikiExtractor.py -b 1G -o Ergebnisse Ergebnisse/ExtractedArticles.xml");
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
-            System.out.println("XML-Bereinigung beendet. Dauer:  " + elapsedTime / 1000f + " sec\n");
+            System.out.println("XML-Bereinigung beendet. Dauer des ganzen Prozesses:  " + elapsedTime / 1000f + " sec\n");
 
         } catch (CompressorException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -113,11 +113,11 @@ public class Main {
         }
         String personEntryScan;
         do {
-            System.out.println("Sollen Personen-Einträge..."
-                    + "a) ... als solche betrachtet werden (es wird nach Vor- und Nachnamen unterschieden)?"
+            System.out.println("Sollen Personen-Einträge...\n"
+                    + "a) ... als solche betrachtet werden (es wird nach Vor- und Nachnamen unterschieden)?\n"
                     + "b) ... generalisiert werden (Personen werden nur als ganze Namen betrachtet)?");
             personEntryScan = scanner.next();
-        } while(!personEntryScan.equals("a") || !personEntryScan.equals("b"));
+        } while(!personEntryScan.equals("a") && !personEntryScan.equals("b"));
         switch(personEntryScan)
         {
             case "a":
