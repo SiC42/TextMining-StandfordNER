@@ -7,10 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Mapping {
 
@@ -21,11 +18,11 @@ public class Mapping {
     private static final String FILE_LOC_CSV = "Ort.csv";
     private static final String FILE_BLACKLIST = "blacklist.txt";
 
+    private static final float STEP_SIZE_FEEDBACK = 0.1f;
+
     /**
-     * Regulärer Ausdruck für alle Zeichen, die nicht Buchstaben oder Leerzeichen sind.
-     * I.e. alle Satzzeichen außer Leerzeichen.
+     * Wörterbuch, mit dem getaggt wird
      */
-    private static final String REPLACE_CHARS = "[.,;'\"()]";
     static Dictionary dict;
 
     /**
@@ -34,13 +31,13 @@ public class Mapping {
      * @param path Pfad zu der Blacklist-Datei
      * @return sortierte Menge der Wörter
      */
-    public static TreeSet<String> listToBlacklist(String path) {
-        TreeSet<String> blacklist = new TreeSet<>();
+    public static TreeMap<String, String> listToBlacklist(String path) {
+        TreeMap<String,String> blacklist = new TreeMap<>(new WordComparator());
         try {
             String line;
             BufferedReader br = new BufferedReader(new FileReader(path));
             while ((line = br.readLine()) != null) {
-                blacklist.add(line);
+                blacklist.put(line, "");
             }
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
@@ -68,25 +65,55 @@ public class Mapping {
     }
 
 
-    public static LinkedList<String> mapping(Dictionary dict, LinkedList<String> text) {
+    public static void mapping(Dictionary dict, LinkedList<String> text, BufferedWriter file) throws IOException {
         int maxEntrySize = dict.getMaxEntrySize();
         int stelle = 0;
-        while (stelle < text.size()) {
-            if (dict.contains(text.get(stelle).replaceAll(REPLACE_CHARS, ""))) {
-                String textToTest = "";
-                for (int i = 0; i < maxEntrySize && stelle + i < text.size(); i++) {
-                    textToTest += text.get(i + stelle) + " ";
+        float progress = STEP_SIZE_FEEDBACK;
+        int initialSize = text.size();
+        String word;
+        while( (word= text.poll()) != null)
+        {
+            if(dict.contains(word))
+            {
+                LinkedList<String> textToTest = new LinkedList<>();
+                textToTest.add(word);
+                for(int i = 0; i< maxEntrySize && (word= text.poll()) != null;i++) {
+                    textToTest.add(word);
                 }
-                Match match = dict.findEntryMatch(textToTest.replaceAll(REPLACE_CHARS, ""));
-                if (match != null) {
-                    text.add(stelle, "<" + match.getCategory() + ":" + match.getComparedPhrase() + ">");
-                    stelle += match.getNumberOfWords() + 1;
-                    text.add(stelle, "</" + match.getCategory() + ">");
+                Match match = dict.findEntryMatch(textToTest);
+                if(match != null)
+                {
+                    for(int i=textToTest.size()-1; i>=match.getNumberOfWords(); i--)
+                    {
+                        text.addFirst(textToTest.get(i));
+                    }
+                    for(int i=textToTest.size()-1; i>=match.getNumberOfWords(); i--)
+                    {
+                        textToTest.remove(i);
+                    }
+                    textToTest.addFirst("<" + match.getCategory() + ":" + match.getComparedPhrase() + ">");
+                    textToTest.addLast("</" + match.getCategory() + ">");
+                    for(String foundWord : textToTest)
+                    {
+                        file.append(foundWord + " ");
+                    }
+                } else {
+                    file.append(textToTest.poll() + " ");
+                    for(int i=textToTest.size()-1; i>=0; i--)
+                    {
+                        text.addFirst(textToTest.get(i));
+                    }
                 }
+            } else{
+                file.append(word + " ");
             }
-            stelle++;
+            if(progress < (float)(initialSize - text.size())/initialSize)
+            {
+                System.out.println(Math.round(progress*100) + "%");
+                progress += STEP_SIZE_FEEDBACK;
+            }
         }
-        return text;
+
     }
 
     /**
@@ -96,16 +123,19 @@ public class Mapping {
      */
     public static void startMapping(String path, boolean personEntry) {
         System.out.println("Fülle Blacklist");
-        TreeSet<String> blacklist = listToBlacklist(DIR_RESSOURCE + "/" + FILE_BLACKLIST);
+        TreeMap<String,String> blacklist = listToBlacklist(DIR_RESSOURCE + "/" + FILE_BLACKLIST);
+        System.out.println("Blacklist gefüllt. \n" +
+                "Anzahl der Einträge: " + blacklist.size());
         dict = new Dictionary(blacklist, personEntry);
         try {
             System.out.println("Fülle Wörterbuch mit Daten");
             listToDict(DIR_RESSOURCE_CSV + "/" + FILE_ORGA_CSV);
             listToDict(DIR_RESSOURCE_CSV + "/" + FILE_LOC_CSV);
             listToDict(DIR_RESSOURCE_CSV + "/" + FILE_PERSON_CSV);
-            System.out.println("Wörterbuch gefüllt." +
-                    "Anzahl der Einträge im Schlüssel: " + dict.size());
-
+            System.out.println("Wörterbuch gefüllt. \n" +
+                    "Anzahl der Einträge im Schlüssel: " + dict.size() +
+                    "\n Längster Eintrag: " + dict.getMaxEntrySize() +
+                    "\n Kürzester Eintrag: " + dict.getMinEntrySize());
 
             String line = "";
             LinkedList<String> text = new LinkedList<>();
@@ -125,17 +155,15 @@ public class Mapping {
             System.out.println("Text einlesen fertig...");
             System.out.println("Starte Mappen und highlighten...");
             long startTime = System.currentTimeMillis();
-            mapping(dict, text);
-            long stopTime = System.currentTimeMillis();
-            long elapsedTime = stopTime - startTime;
-            System.out.println("Mappen beendet. Schreibe in Datei (" + elapsedTime / 1000f + " sec).");
             BufferedWriter file = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Ergebnisse/Mapped.out"), "UTF8"));
-            for (String word : text) {
-                file.append(word + " ");
-            }
+            int textSize = text.size();
+            mapping(dict, text, file);
             file.flush();
             file.close();
-            System.out.println("In Datei schreiben beendet.");
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            System.out.println("Mappen und schreiben beendet (" + elapsedTime / 1000f + " sec).");
+            System.out.println("Geschwindigkeit: " + textSize / (elapsedTime / 1000f) + " Words/sec");
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
         }
