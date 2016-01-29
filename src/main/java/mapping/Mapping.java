@@ -1,12 +1,6 @@
 package mapping;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.*;
 
 public class Mapping {
@@ -35,7 +29,9 @@ public class Mapping {
         TreeMap<String,String> blacklist = new TreeMap<>(new WordComparator());
         try {
             String line;
-            BufferedReader br = new BufferedReader(new FileReader(path));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(path), "UTF8"));
             while ((line = br.readLine()) != null) {
                 blacklist.put(line, "");
             }
@@ -53,7 +49,9 @@ public class Mapping {
     public static void listToDict(String path) {
         try {
             String line;
-            BufferedReader br = new BufferedReader(new FileReader(path));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(path), "UTF8"));
             while ((line = br.readLine()) != null) {
                 if (line.indexOf(";") > 1) {
                     dict.add(line.split(";"));
@@ -91,8 +89,22 @@ public class Mapping {
                     {
                         textToTest.remove(i);
                     }
-                    textToTest.addFirst("<" + match.getCategory() + ":" + match.getComparedPhrase() + ">");
-                    textToTest.addLast("</" + match.getCategory() + ">");
+                    String sonderzeichenAnfang = "";
+                    String sonderzeichenEnde = "";
+                    if(textToTest.peekFirst().matches("^" + Dictionary.REPLACE_CHARS + ".*"))
+                    {
+                        sonderzeichenAnfang = textToTest.peekFirst();
+                        textToTest.addFirst(sonderzeichenAnfang.substring(1));
+                        sonderzeichenAnfang = sonderzeichenAnfang.substring(0,1);
+                    }
+                    if(textToTest.peekLast().matches(".*"+Dictionary.REPLACE_CHARS))
+                    {
+                        sonderzeichenEnde = textToTest.pollLast();
+                        textToTest.addLast(sonderzeichenEnde.substring(0,sonderzeichenEnde.length()-2));
+                        sonderzeichenEnde = sonderzeichenEnde.substring(sonderzeichenEnde.length()-1);
+                    }
+                    textToTest.addFirst( sonderzeichenAnfang + "<" + match.getCategory() + ":" + match.getComparedPhrase() + ">");
+                    textToTest.addLast("</" + match.getCategory() + ">" + sonderzeichenEnde);
                     for(String foundWord : textToTest)
                     {
                         file.append(foundWord + " ");
@@ -140,7 +152,10 @@ public class Mapping {
             String line = "";
             LinkedList<String> text = new LinkedList<>();
 
-            BufferedReader br = new BufferedReader(new FileReader(path));
+
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            new FileInputStream(path), "UTF8"));
             while ((line = br.readLine()) != null) {
                 if (!(line.startsWith("<doc ") ||
                         (line.startsWith("</doc>")))) {

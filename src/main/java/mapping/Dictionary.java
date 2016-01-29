@@ -49,6 +49,7 @@ public class Dictionary {
      */
     public static final String REPLACE_CHARS = "[.,;'\"()]";
 
+
     /**
      * Initialisiert leeres Wörterbuch mit leerer Blacklist.
      */
