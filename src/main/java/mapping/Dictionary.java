@@ -23,7 +23,7 @@ public class Dictionary {
     /**
      * Liste mit Wörtern, die nicht als Key hinzugefügt werden sollen
      */
-    TreeSet<String> blacklist;
+    TreeMap<String, String> blacklist;
 
 
     /**
@@ -32,9 +32,22 @@ public class Dictionary {
     int maxEntrySize;
 
     /**
-     *
+     * Gibt Anzahl der Wörtern im kürzesten Eintrag des Wörterbuchs aus.
+     */
+    int minEntrySize;
+
+    /**
+     * Gibt an, ob eine Person als Person behandelt wird (true), oder generalisiert wird.
+     * Bei der Generalisierung werden die Namen der Personen nicht nach Vor- und Nachname getrennt,
+     * sondern als ganzes behandelt.
      */
     boolean personFlag;
+
+    /**
+     * Regulärer Ausdruck für alle Zeichen, die nicht Buchstaben oder Leerzeichen sind.
+     * I.e. alle Satzzeichen außer Leerzeichen.
+     */
+    public static final String REPLACE_CHARS = "[.,;'\"()]";
 
     /**
      * Initialisiert leeres Wörterbuch mit leerer Blacklist.
@@ -43,7 +56,8 @@ public class Dictionary {
         this.personFlag = personFlag;
         dictionary = new TreeMap<>(new WordComparator());
         maxEntrySize = 0;
-        blacklist = new TreeSet<>(new WordComparator());
+        minEntrySize = Integer.MAX_VALUE;
+        blacklist = new TreeMap<>(new WordComparator());
     }
 
     /**
@@ -51,35 +65,9 @@ public class Dictionary {
      *
      * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
      */
-    public Dictionary(TreeSet<String> blacklist, boolean personFlag) {
+    public Dictionary(TreeMap<String, String> blacklist, boolean personFlag) {
         this(personFlag);
-        this.blacklist.addAll(blacklist);
-    }
-
-
-    /**
-     * Initialisert Wörterbuch mit übergebenen Einträgen.
-     *
-     * @param entry     Einträge, ein Eintrag pro Array-Feldeintrag
-     * @param category  mit den Einträgen assoziierte Kategorie
-     * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
-     */
-    public Dictionary(String entry, String category, TreeSet<String> blacklist, boolean personFlag) {
-        this(blacklist, personFlag);
-        add(entry, category);
-    }
-
-
-    /**
-     * Initialisert Wörterbuch mit übergebenen Einträgen und der Kategorie.
-     *
-     * @param entries   Einträge, ein Eintrag pro Array-Feldeintrag
-     * @param category  mit den Einträgen assoziierte Kategorie
-     * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
-     */
-    public Dictionary(String[] entries, String category, TreeSet<String> blacklist, boolean personFlag) {
-        this(blacklist, personFlag);
-        add(entries, category);
+        this.blacklist.putAll(blacklist);
     }
 
 
@@ -145,21 +133,24 @@ public class Dictionary {
                 System.out.println(String.format("Konnte nicht eingefügt werden, Kategorie %s unbekannt.", category));
                 return;
         }
-        for (String entryKey : entry.getKeys()) {
-            if (!blacklist.contains(entryKey) && !entryKey.equals("")) { //Blacklist-Wörter & leere Wörter abfangen
-                if (dictionary.containsKey(entryKey)) //erstes Wort als Schlüssel im Wörterbuch
-                {
-                    dictionary.get(entryKey).add(entry);
-                } else //erstes Wort des Eintrags nicht im Wörterbuch
-                {
-                    //erstelle neue Liste von Einträgen und füge sie zum Wörterbuch hinzu
-                    LinkedList<Entry> followWords = new LinkedList<>();
-                    followWords.add(entry);
-                    dictionary.put(entryKey, followWords);
+        if(entry.size() > 0) {
+            for (String entryKey : entry.getKeys()) {
+                if (!blacklist.containsKey(entryKey) && !entryKey.equals("")) { //Blacklist-Wörter & leere Wörter abfangen
+                    if (dictionary.containsKey(entryKey)) //erstes Wort als Schlüssel im Wörterbuch
+                    {
+                        dictionary.get(entryKey).add(entry);
+                    } else //erstes Wort des Eintrags nicht im Wörterbuch
+                    {
+                        //erstelle neue Liste von Einträgen und füge sie zum Wörterbuch hinzu
+                        LinkedList<Entry> followWords = new LinkedList<>();
+                        followWords.add(entry);
+                        dictionary.put(entryKey, followWords);
+                    }
                 }
             }
+            updateMaxEntrySize(entry.size());
+            updateMinEntrySize(entry.size());
         }
-        updateMaxEntrySize(entry.size());
     }
 
 
@@ -170,7 +161,7 @@ public class Dictionary {
      * @return true, wenn Wort im Wörterbuch, false sonst
      */
     public boolean contains(String word) {
-        return dictionary.containsKey(word);
+        return dictionary.containsKey(word.replaceAll(REPLACE_CHARS, ""));
     }
 
     /**
@@ -209,12 +200,22 @@ public class Dictionary {
      * @return Match, wenn gefunden, sonst null
      */
     public Match findEntryMatch(LinkedList<String> sentencesList) {
-        LinkedList<Entry> followWordList = dictionary.get(sentencesList.get(0));
+        LinkedList<String> sentencesListCleared = new LinkedList<>();
+        for(String word : sentencesList)
+        {
+            sentencesListCleared.add(word.replaceAll(REPLACE_CHARS, ""));
+        }
+        LinkedList<Entry> followWordList = dictionary.get(sentencesListCleared.get(0));
         TreeMap<Float, Match> matches = new TreeMap<>();
         if (followWordList != null) {
             // Vergleiche jeden Eintrag im zum gefundenen Schlüssel
             for (Entry followWords : followWordList) {
-                Match match = followWords.compareTo(sentencesList);
+                Match match = followWords.compareTo(sentencesListCleared);
+                if(match !=null && match.getMatchValue()!=1.0f)
+                {
+                    if(blacklist.containsKey(sentencesListCleared.peekFirst()))
+                        match = null;
+                }
                 if (match != null) {
                     boolean betterMatch = false;
                     if (matches.containsKey(match.getMatchValue())) {
@@ -248,6 +249,16 @@ public class Dictionary {
 
 
     /**
+     * Gibt Anzahl der Wörter des kleinsten Eintrags aus.
+     *
+     * @return Anzahl der Wörter des kleinsten Eintrags
+     */
+    public int getMinEntrySize() {
+        return minEntrySize;
+    }
+
+
+    /**
      * Aktualisiert den Wert für die Anzahl der Wörter des größten Eintrags, falls nötig.
      *
      * @param newMax Anzahl der Wörter des neuen Eintrags
@@ -255,6 +266,17 @@ public class Dictionary {
     private void updateMaxEntrySize(int newMax) {
         if (maxEntrySize < newMax) {
             maxEntrySize = newMax;
+        }
+    }
+
+    /**
+     * Aktualisiert den Wert für die Anzahl der Wörter des kleinsten Eintrags, falls nötig.
+     *
+     * @param newMin Anzahl der Wörter des neuen Eintrags
+     */
+    private void updateMinEntrySize(int newMin) {
+        if (minEntrySize > newMin) {
+            minEntrySize = newMin;
         }
     }
 
@@ -326,11 +348,12 @@ public class Dictionary {
     System.out.println("Schröders Geburtstag war großartig || " + dict.findEntryMatch("Schröders Geburtstag war großartig"));
     System.out.println("Schroders Geburtstag war großartig || " + dict.findEntryMatch("Schroders Geburtstag war großartig"));
     System.out.println("====================");*/
+        dict.blacklist.put("Der", "");
         dict.add("Angela Merkel", "Person");
         dict.add("Merkur", "Ort");
-        String satz = "Merkels Bund";
-        System.out.println(dict.getEntries("Merkels"));
-        System.out.println(satz + " || " + dict.findEntryMatch(satz));
+        dict.add("Der Schwabenhansel", "Person");
+
+        System.out.println(dict.getDictionary());
     }
 
 }
