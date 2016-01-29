@@ -12,7 +12,7 @@ buildNumber.properties
 .mvn/timing.properties
 
 # IntelliJ-Stuff
-*.imp
+*.iml
 .idea/
 Praktikumsbericht/*.aux
 Praktikumsbericht/*.log
