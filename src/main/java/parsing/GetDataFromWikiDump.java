@@ -76,7 +76,7 @@ public class GetDataFromWikiDump {
             
         } catch (FileNotFoundException e) {
             System.err.println(" -------------------------------------------------------------------------------");
-            System.err.println("DATEI NICHT GEFUNDEN!!! \n"    );
+            System.err.println("DATEI NICHT GEFUNDEN!!!"    );
             System.err.println("-----------------------------------------------------------------------------\n");
         } catch (IOException | SAXException e) {
             //System.err.println(e);
