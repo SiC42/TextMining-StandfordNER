@@ -1,8 +1,8 @@
 \documentclass[a4paper]{article}
 
- \usepackage[utf8]{inputenc}
-  \usepackage[ngerman]{babel}
-  \usepackage[autostyle=true,german=quotes]{csquotes}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[autostyle=true,german=quotes]{csquotes}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -30,8 +30,15 @@ Zur Erstellung der Trainingsdaten, teilten wir zunächst unseren markierten Text
 Im nächsten Schritt parsten wir den entstandenen tokenisierten Text und ersetzten den Buchstaben 'O' der Wörter zwischen den Tags, durch die jeweilige Kategorie. In diesem Schritt löschten wir die tags aus dem Text und schrieben das Ergebnis, also die richtig formatierten Trainingsdaten, in die Datei ''TrainingsData.out''.
 
 \subsection{Erstellung des Klassifikators}
-In diesem Schritt trainierten wir den Stanford NER anhand unserer erstellten Trainingsdaten. Dafür rufen wir die Main Methode des Stanford NER Klassifikators auf und übergeben ihm eine propertyfile. Diese gibt Eigenschaften des Trainings und des zu erstellenden Klassifikators an.
+In diesem Schritt trainierten wir den Stanford NER anhand unserer maschinell erstellten Trainingsdaten. Dafür rufen wir die Main Methode des Stanford NER Klassifikators auf und übergeben ihm eine Propertydatei (''Ressourcen/default.prop''). Diese gibt Eigenschaften des Trainings und des zu erstellenden Klassifikators an.
 
 \section{Probleme bei der Lösung der Aufgabe}
+Zum Beginn unseres Projektes hatten insgesamt 5 verschiedene Projekte zur Verfügung, welche wir als Ausgangsdaten zur erstellung der Klassifikators nutzen sollten. Diese Programme waren leider zu Teil schlecht oder gar nicht dokumentiert, beziehungsweise nicht lauffähig. Zum Beispiel arbeitete das Programm ''Wiki\_ORG'' auf einer Datenbank welche wir erst hätten aufsetzen müssen, und  das Programm ''WIKI\_ORTE'' ging nicht zu compilieren. Wir entschieden uns deshalb das Programm ''WIKI\_TITLE'' zu nutzen da es die für uns nötigen Daten zur Verfügung stellte und wir es nach ein paar Anpassungen ausführen konnten.
+
+Beim extrahieren des Klartextes aus den gefilterten Artikeln mit dem Programm ''WikiExtraktor.py'' (Quelle: \url{https://github.com/attardi/wikiextractor}) werden zum bei manchen Artikeln Teile des Textes verworfen. Wir konnten leider die Ursache des Bugs nicht finden. Da wir jedoch auf einer sehr großen Menge an Daten arbeiten, entschieden wir uns diesen Bug zu ignorieren, da das Training auf einem Teilartikel wahrscheinlich keine Auswirkung auf unser Ergebnis hat.
+
+Zum Auffinden der zu markierenden Wörter in unserem Text benutzten wir zunächt ''exact-matches''. Vornamen und Nachnamen die einzeln im Text standen und die Beugung von Wörtern wurden dadurch leider nicht erkannt. Um dies zu verbessern, spalteten wir die Liste der Personennamen in Vornamen und Nachnamen auf und benutzten die Levenstein Distanz um Beugungen zu erkennen. Hierbei ergab sich ein erneutes Problem die auf die Mehrdeutigkeit von Wörtern, speziell Nachnamen, zurückzuführen ist, denn nun wurden Wörter markiert welche eine andere Beudeutung haben. Um dies zu verhindern wurde eine Art Bestrafung bei der Erkennung von Nachnamen eingeführt, wenn kein Vornamen vorhanden ist. Generell ist die Mehrdeutigkeit von Wörtern ein großes Problem beim markieren und wir erlangen somit viele falsch positive Ergbnisse. Desweiteren werden durch die Levenstein Distanz ebenfalls viele Wörter auch falsch markiert. Als Beispiel dient das Wort ''Triumph'' welches sowohl eine Motorradmarke also Organisation, als auch Triumph im Sinne von Siegen ist. Das Wort ''Stadt'' wird als Ort markiert wird, da es einen Ort Namens ''Stade'' gibt und die Leventstein Distanz lediglich 1 beträgt.
+
+Ein weiteres Problem stellt die Laufzeit unseres Programmes dar. Die zwei am längsten dauernden Funtionen sind das Extrahieren der Wikipediaartikel und das erstellen des Klassifikators mit der Stanford NER Bibliothek.
 \section{Ergebnisse}
 \end{document}
