@@ -7,7 +7,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage[colorlinks, linkcolor = black, citecolor = black, filecolor = black, urlcolor = blue]{hyperref} 
+\usepackage[colorlinks, linkcolor = black, citecolor = black, filecolor = black, urlcolor = blue]{hyperref}
 \author{Sebastian Gottwald, Simon Bordewisch}
 \title{Text-Mining Praktikumsbericht}
 \date{4. Februar 2016}
@@ -21,10 +21,25 @@ Der Stanford NER ist eine Java-Implementation eines Named Entity Recognizers (NE
 \section{Methodik und Vorgehen}
 \subsection{Aufarbeitung der Vergleichsdaten}
 Wir hatten insgesamt vier verschiedene Programme des Vorjahrespraktikas zur Verfügung. Wir entschieden uns das Programm zu nutzen, welches auf den Titeln der Wikipediaartikel arbeitet, da dieses am leichtesten zu bedienen war und wir eine umfangreiche und nahezu fehlerfreie Liste von Organisationen sowie Personen- und Ortsnamen erhielten. Wir mussten zunächst diese Liste aufarbeiten, sodass sie ein für uns nutzbares Format besitzt. Wir speicherten die einzelnen Entitäten in einer TreeMap zur weiterverarbeitung. Dadurch erziehlen wir gute Zeiten bei der Suche nach einem Wort.
+
 \subsection{Extraktion der Wikipedia Artikel}
 Als Datengrundlage zur erstellung der Trainingsdaten des Klassifikators, diente uns der aktuelle Wikipedia Dump ''dewiki-latest-pages-articles.xml.bz2''. Zum extrahieren der Daten nutzten wir StAX-API da diese sich gut für Große Datenmengen eignet. Beim parsen de Wikipediadumps haben wir die Normdaten der Artikel überprüft, da Personenartikel die Bezeichnung ''Typ=p'', Ortsartikel die Bezeichung ''Typ=g'' und Körperschaftsartikel die Bezeichnung ''Typ=k'' in ihren Normdaten besitzen und wir somit die Artikel extrahieren können, welche uns wahrscheinlich beste Ergebnisse beim finden von Wörtern liefern. Zur Bereinigung der extrahierten Artikel verwendeten wir das Python-Script ''WikiExtraktor.py'' (Quelle: \url{https://github.com/attardi/wikiextractor}), welches den Klartext der Wikipediaartikel im Ordner ''Ergebnisse/AA/wiki\_00'' abspeichert.
 
-\subsection{Suche der Entities anhand von Vergleichsdaten}
+\subsection{Volltextsuche und Tagging}
+Um die Trainingsdaten erstellen zu können, mussten zunächst ein Wörterbuch erstellt werden und der extrahierte Klartext getaggt werden.
+Ziel war es den Klartext so vorzubereiten, dass dieser anschließend in die Form gebracht werden konnte, die für den Standford NER benötigt wird.
+\subsubsection{Erstellung des Wörterbuchs}
+Um ein möglichst gutes Wörterbuch erstellen zu können, mit der Tagger arbeiten kann, haben wir uns dazu entschieden die Vergleichdaten der Titel-Gruppe aufzuarbeiten.
+Die Vergleichsdaten, die alle Körperschaften, Orte und Personen in einer Datei enthielten, wurden von einem Parser\footnote{Vergleiche package ''parsetitlenorm''} zunächst in die verschiedenen Kategorien aufgeteilt, bereinigt und anschließend in drei verschiedenen Dateien (eine pro Kategorie) im CSV-Format gespeichert. Bei der Bereinigung wurden Wörter, Einträge, die in einer Blacklist stehen, rausgefiltert. Ursprünglich sollten hier die Namen der Personen nach Vor- und Nachname getrennt werden, dies wurde allerdings im späteren Entwicklungsverlauf beim Einlese-Prozess der CSV-Dateien in den Tagger realisiert.
+
+\subsubsection{Einlesen des Klartextes und Tagging}
+Das package ''mapping'' dient dazu die Klartexte, die zu Trainingszwecken genutzt werden sollen, einzulesen und die Wörter einzeln zu untersuchen und die Wörter zu markieren, die als ein ''Match'', also eine Übereinstimmung mit dem Wörterbuch, erkannt wurden.
+Die Definition des Matches unterlief dabei mehrern Iterationen. Zunächst wurden nur vollständige Übereinstimmungen als Match angesehen.
+Dies lieferte jedoch zu schlechte Ergebnisse, da zum Beispiel gebeugte Namen (z.B. ''Merkels'') nicht erkannt werden.
+Daraufhin wurde Levenshtein-Distanz zur Berechnung der Ähnlichkeit benutzt, um die obigen Ergebnisse zu verbessern. Später wurde das Programm so abgeändert, dass die Ähnlichkeit der Suffixe der Wörter (die letzten drei Buchstaben der Wörter) berechnet wurde, während der Rest des Wortes exakt übereinstimmen muss. Für das Ähnlichkeitsmaß wurden die Ergebnisse der obig genannten Gruppen verwendet, welche auf der Levenshtein-Distanz relativ zur Gesamtlänge des Eintrages basiert, sodass die Ähnlichkeit ca 83\% betragen muss.
+Zusätzlich mit der Implementierung von Gewichtungen, die sowohl die Ähnlichkeit des Eintrags als auch das Fehlen von zum Beispiel der Vornamen (zum Beispeil im Fall des Eintrages ''Angela Merkel'', wenn im Text nur ''Merkel'' vorkommt) gewichtet, liefert das Matching gute Ergebnisse. Diese Matchings wurden von dem Programm markiert. Hierfür wurden XML-ähnliche Tags verwendet(vgl. Bild).
+Der daraus resultierende Text mit den Tags wird anschließend in eine Datei geschrieben (Standard: ''Ergebnisse/Mapped.out''). Diese ermöglicht durch seine Struktur ein Debugging der Texte, da die XML-Tags den im Wörterbuch gefundenen Match enthalten.
+
 \subsection{Erstellung der Traningsdaten}
 Zur Erstellung der Trainingsdaten, teilten wir zunächst unseren markierten Text in einzelne Wörter auf. Dafür benutzten wir den von der Stanford Core NLP mitgelieferten Tokenizer. Dieser Transformiert den Text dahingehend, dass er in eine Zeile ein Wort schreibt. Wir fügten danach an jedes Wort einen Tabulator und den Buchstaben 'O' welcher als Default Buchstabe des Stanford NER genutzt wird.
 Im nächsten Schritt parsten wir den entstandenen tokenisierten Text und ersetzten den Buchstaben 'O' der Wörter zwischen den Tags, durch die jeweilige Kategorie. In diesem Schritt löschten wir die tags aus dem Text und schrieben das Ergebnis, also die richtig formatierten Trainingsdaten, in die Datei ''TrainingsData.out''.
