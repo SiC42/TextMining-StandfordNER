@@ -41,7 +41,7 @@ Zusätzlich mit der Implementierung von Gewichtungen, die sowohl die Ähnlichkei
 Der daraus resultierende Text mit den Tags wird anschließend in eine Datei geschrieben (Standard: ''Ergebnisse/Mapped.out''). Diese ermöglicht durch seine Struktur ein Debugging der Texte, da die XML-Tags den im Wörterbuch gefundenen Match enthalten.
 
 \subsection{Erstellung der Traningsdaten}
-Zur Erstellung der Trainingsdaten, teilten wir zunächst unseren markierten Text in einzelne Wörter auf. Dafür benutzten wir den von der Stanford Core NLP mitgelieferten Tokenizer. Dieser Transformiert den Text dahingehend, dass er in eine Zeile ein Wort schreibt. Wir fügten danach an jedes Wort einen Tabulator und den Buchstaben 'O' welcher als Default Buchstabe des Stanford NER genutzt wird.
+Das im vorherigem Abschnitt erwähnte getaggte Dokument wurde zunächst in einzelne Wörter aufgeteilt. Dafür benutzten wir den von der Stanford Core NLP mitgelieferten Tokenizer. Dieser Transformiert den Text dahingehend, dass er in eine Zeile ein Wort schreibt. Wir fügten danach an jedes Wort einen Tabulator und den Buchstaben 'O' welcher als Default Buchstabe des Stanford NER genutzt wird.
 Im nächsten Schritt parsten wir den entstandenen tokenisierten Text und ersetzten den Buchstaben 'O' der Wörter zwischen den Tags, durch die jeweilige Kategorie. In diesem Schritt löschten wir die tags aus dem Text und schrieben das Ergebnis, also die richtig formatierten Trainingsdaten, in die Datei ''TrainingsData.out''.
 
 \subsection{Erstellung des Klassifikators}
