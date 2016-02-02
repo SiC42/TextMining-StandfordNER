@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{longtable}
 \usepackage{rotating}
+\usepackage{hvfloat}
 \usepackage{tabularx}
 \usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[colorlinks, linkcolor = black, citecolor = black, filecolor = black, urlcolor = blue]{hyperref} 
@@ -95,42 +96,136 @@
 \section{Ergebnisse}
 	Alle maschinell erstellten Klassifizierer wurden auf einem per Hand annotierten Goldstandart verglichen. 
 	Dieser Goldstandart bestand aus 100 Beispielsätzen (1530 Wörter und Satzzeichen) aus Nachrichtenartikeln oder Beispielsätzen des Projektes ''Wortschatz'' der Universität Leipzig. 
-	Desweiteren haben wir unsere Klassifikator gegen den auf der Stanford NER Webseite erhältlichen deutschen Klassifikator  verglichen. Die Ausführlichen Ergebnisse sind in der Tabelle \nameref{Tabelle Ergebnisse} zu finden.
+	Desweiteren haben wir unsere Klassifikator gegen den auf der Stanford NER Webseite erhältlichen deutschen Klassifikator  verglichen. 
+	Die ausführlichen Ergebnisse sind in der \autoref{Ergebnistabelle} im Anhang zu finden.
 	
 	Man kann erkennen, dass der Klassifikator welcher Vor- und Nachnamen getrennt betrachtet und mit der Property-file des deutschen Klassifikators trainiert wurde, am besten Abschneidet. 
-	Desweiteren sieht man einen Unterschied zwischen den Klassifikatoren welche Vor- und Nachnamen getrennt betrachten zu diesen, die Namen als ganzes betrachten. 
-	Mit ersterem werden mehr Wörter richtig markiert, dies ist dadurch zu erklären, dass oftmals Vor und Nachnamen nur einzeln im Text audtauchen. 
+	Jedoch kann man bei den Klassifikatoren welche auf 60 beziehungsweise 150 Artikeln Trainiert wurden kaum einen Unterschied erkennen, sodass man darauf schließen kann, dass mehr Trainingsdaten keine erherbliche Verbesserung bringen. 
+	Dennoch sollte noch einmal auf einer größeren Menge Trainingsdaten trainiert werden, allerdings fehlen uns dafür die Ressourcen.  
+	
+	Des Weiteren sieht man einen Unterschied zwischen den Klassifikatoren welche Vor- und Nachnamen getrennt betrachten zu diesen, die Namen als ganzes betrachten. 
+	Mit Ersteren werden mehr Wörter richtig markiert, dies ist dadurch zu erklären, dass oftmals Vor und Nachnamen nur einzeln im Text auftauchen, welche schon in den Trainingdaten als solche markiert werden. 
 	Auf der anderen Seite werden dadurch auch mehr falsch positive, also Wörter die keine Kategorie repräsentieren, getaggt. 
 	Dies ist auf die Mehrdeutigkeit der Nachnamen von Personen zurückzuführen. 
 	Nicht desto Trotz kommen wir zu dem Schluss, dass eine Trennung nach Vor und Nachnamen besser ist. 
-	Man könnte die Ergebnisse vielleicht noch verbessern, indem man beim erstellen der Traningsdaten die linken und rechten Nachbarn der Wörter anschaut und somit auf Fehler schließen kann. 
+	Man könnte die Ergebnisse vielleicht noch verbessern, indem man beim erstellen der Traningsdaten die linken und rechten Nachbarn der Wörter anschaut und somit auf Fehler schließt. 
 	
+	Im Vergleich zu den bereits existierenden Klassifikatoren sieht man, dass unsere Klassifikatoren schlechter abgeschlossen haben. 
+	Im Schnitt liegen unsere Klassifikatoren 15\% unter den Ergebnissen des offiziellen Klassifizierers.
 	
-	
-
-
-
-\begin{sidewaystable}
-\label{Tabelle Ergebnisse}
-\caption{Ergebnistabelle}
-\begin{longtable}{|c|c|c|c|c|c|c|c|c|}
+	\newpage
+\appendix{
+\section{Anhang}
+\hvFloat[%
+nonFloat=true,%
+capWidth=w,%
+capPos=t,%
+rotAngle=90,%
+objectPos=c%
+]{table}{%
+\renewcommand{\arraystretch}{1,5}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
 \hline 
-Anzahl Artikel & Variante & Property Datei & Precision & Recall & F1 & TP & FP & FN \\ 
+Anzahl Artikel pro Kategorie & Variante & Property Datei & Precision & Recall & F1 & PPW & TP & FP & FN  \\ 
 \hline 
-150 & Personen Vor- Nachname getrennt & german.dewac\_175m\_600 & 40,98\% & 47,19\% & 43,86\% & 84 & 121 & 94 \\ 
+je 20 & Personenname getrennt & default & 40,80\% & 46,07\% & 43,27\% & 40,79\% & 82& 119 & 96\\
 \hline 
-150 & Personen Vollnamen & german.dewac\_175m\_600 & 50,94\% & 30,34\% & 38,03\% & 54 & 52 & 124 \\ 
+je 20 & Personen Vollnamen & default & 52,53\% & 29,21\% & 37,55\% & 52,52\% & 52 & 47 & 126\\
 \hline 
-150 & Personen Vor- Nachname getrennt & default & 39,11\% & 44,38\% & 41,58\% &  79 & 123 & 99 \\ 
+je 20 & Personenname getrennt & german.dewac\_175m\_600 & 40,72\% & 44,38\% & 42.47\% & 40,72\% & 79 & 115 & 99\\
 \hline 
-150 & Personen Vollname & default & 49,53\% & 29,78\% & 37,19\% & 51 & 54 & 125 \\ 
+je 20 & Personen Vollnamen & german.dewac\_175m\_600 & 53,06\% & 29,21\% & 37,68\% & 53,06\% & 52 & 46 & 126\\
 \hline 
-  &  & German-Classifier-DEWAC & 65,81\% & 57,30\% & 61,26\% & 102 & 53 & 76 \\ 
-\hline 
-  &  & German-Classifier-HGC & 61,22\% & 50,56\% & 55,38\% & 90 & 57 & 88 \\ 
 \hline
-\end{longtable} 
-\end{sidewaystable}
+je 50 & Personenname getrennt & default & 39,11\% & 44,38\% & 41,58\% & 39,11\% & 79 & 123 & 99 \\ 
+\hline 
+je 50 & Personen Vollname & default & 49,53\% & 29,78\% & 37,19\% & 49,53\% & 53 & 54 & 125 \\ 
+\hline
+je 50 & Personenname getrennt & german.dewac\_175m\_600 & 40,98\% & 47,19\% & 43,86\% & 40,98\% & 84 & 121 & 94 \\ 
+\hline 
+je 50 & Personen Vollnamen & german.dewac\_175m\_600 & 50,94\% & 30,34\% & 38,03\% & 50,94\% & 54 & 52 & 124 \\ 
+\hline 
+\hline
+  &  & German-Classifier-DEWAC & 65,81\% & 57,30\% & 61,26\% & 65,81\% & 102 & 53 & 76 \\ 
+\hline 
+  &  & German-Classifier-HGC & 61,22\% & 50,56\% & 55,38\% & 61,22\% & 90 & 57 & 88 \\ 
+\hline
+\end{tabular} 
+}{Ergebnisse}{Ergebnistabelle}
+
+\begin{table}
+\centering
+	\caption{150 Artikel, default Property, Personen generalisiert}
+	\label{defPropGeneralisiert}
+	\renewcommand{\arraystretch}{1,5}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline 
+		Entität & Precision & Recall & F1 & TP & FP & FN \\ 
+		\hline 
+		ORGANISATION & 25,00\% & 5,13\% & 8,51\% & 2 & 6 & 37 \\ 
+		\hline 
+		ORT & 50,67\% & 52,05\% & 51,35\% & 38 & 37 & 35 \\ 
+		\hline 
+		PERSON & 54,17\% & 19,70\% & 28,89\% & 13 & 11 & 53 \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
+
+
+\begin{table}
+	\centering
+	\caption{150 Artikel, default Property, Personen als Person}
+	\renewcommand{\arraystretch}{1,5}
+	\label{defPropPaP}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline 
+		Entität & Precision & Recall & F1 & TP & FP & FN \\ 
+		\hline 
+		ORGANISATION & 25,00\% & 5,13\% & 8,51\% & 2 & 6 & 37 \\ 
+		\hline 
+		ORT & 58,21\% & 53,42\% & 55,71\% & 39 & 28 & 34 \\ 
+		\hline 
+		PERSON & 29,92\% & 57,58\% & 39,38\% & 38 & 89 & 28 \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{150 Artikel, dewiki Property, Personen Generalisiert}
+	\renewcommand{\arraystretch}{1,5}
+	\label{dewacPropPG}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline 
+		Entität & Precision & Recall & F1 & TP & FP & FN \\ 
+		\hline 
+		ORGANISATION & 25,00\% & 5,13\% & 8,51\% & 2 & 6 & 37 \\ 
+		\hline 
+		ORT & 52,05\% & 52,05\% & 52,05\% & 38 & 35 & 35 \\ 
+		\hline 
+		PERSON & 56,00\% & 21,21\% & 30,77\% & 14 & 11 & 52 \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
+
+
+\begin{table}
+	\centering
+	\caption{150 Artikel, dewac Property, Personen als Person}
+	\renewcommand{\arraystretch}{1,5}
+	\label{dewacPropPaP}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline 
+		Entität & Precision & Recall & F1 & TP & FP & FN \\ 
+		\hline 
+		ORGANISATION & 25,00\% & 5,13\% & 8,51\% & 2 & 6 & 37 \\ 
+		\hline 
+		ORT & 56,72\% & 52,05\% & 54,29\% & 39 & 29 & 35 \\ 
+		\hline 
+		PERSON & 33,85\% & 66,67\% & 44,90\% & 44 & 86 & 22 \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
 
 
 \end{document}
