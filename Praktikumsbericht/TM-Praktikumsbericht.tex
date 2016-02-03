@@ -48,7 +48,7 @@
 		\subsubsection{Erstellung des Wörterbuchs}
 			Um ein möglichst gutes Wörterbuch erstellen zu können, mit dem der Tagger arbeiten kann, haben wir uns dazu entschieden die Vergleichdaten der Titel-Gruppe aufzuarbeiten.
 			Die Vergleichsdaten, die alle Körperschaften, Orte und Personen in einer Datei enthielten, wurden von einem Parser\footnote{Vergleich package ''parsetitlenorm''} zunächst in die verschiedenen Kategorien aufgeteilt, bereinigt und anschließend in drei verschiedenen Dateien (eine pro Kategorie) im CSV-Format gespeichert. 
-	 ------ Bei der Bereinigung wurden Wörter, Einträge, die in einer Blacklist stehen, rausgefiltert. ------
+			Bei der Bereinigung wurden Wörter, die in einer Blacklist stehen, rausgefiltert. 
 			Ursprünglich sollten hier die Namen der Personen nach Vor- und Nachname getrennt werden, dies wurde allerdings im späteren Entwicklungsverlauf beim Einlese-Prozess der CSV-Dateien in den Tagger realisiert.
 
 		\subsubsection{Einlesen des Klartextes und Tagging}
@@ -75,8 +75,12 @@
 	
 	\subsection{Erstellung des Klassifikators}
 		Nachdem die Trainingsdaten maschinell erstellt wurden, wurde der Stanford NER trainiert.
-		Im Hauptprogramm wird die Main-Methode des Stanford NER Klassifikators aufgerufen und eine Propertydatei (''Ressourcen/default.prop'') übergeben. 
-		Diese Propertydatei gibt Eigenschaften des Trainings und des zu erstellenden Klassifikators an.
+		Im Hauptprogramm wird die Main-Methode des Stanford NER Klassifikators aufgerufen und eine Propertydatei\footnote{in unseren Tests unter Anderem ''Ressourcen/default.prop''} übergeben. 
+		Diese Propertydatei gibt Eigenschaften des Trainings und des zu erstellenden Klassifikators an. 
+		
+		Für unsere Tests wählten wir zwei verschiedenen Property-Dateien. 
+		Zum einen die Property-Datei, welche in den FAQ der Stanford NER Webseite vorgestellt wird\footnote{vgl. ''default.prop''}, zum anderen die Propertydatei des deutschen Klassifikators ''German-Classifier-DEWAC''\footnote{vgl. ''german.dewac\_175m\_600.prop''}. 
+		Die Letztere weist für die deutsche Sprache angepasste Features auf und trainiert unter Anderem zweimal auf den Trainingsdaten. 
 
 \section{Probleme bei der Lösung der Aufgabe}
 	Beim extrahieren des Klartextes aus den gefilterten Artikeln mit dem Programm ''WikiExtraktor.py'' werden zum bei manchen Artikeln Teile des Textes verworfen. 
@@ -99,21 +103,30 @@
 	Desweiteren haben wir unsere Klassifikator gegen den auf der Stanford NER Webseite erhältlichen deutschen Klassifikator  verglichen. 
 	Die ausführlichen Ergebnisse sind in der \autoref{Ergebnistabelle} im Anhang zu finden.
 	
-	Man kann erkennen, dass der Klassifikator welcher Vor- und Nachnamen getrennt betrachtet und mit der Property-file des deutschen Klassifikators trainiert wurde, am besten Abschneidet. 
-	Jedoch kann man bei den Klassifikatoren welche auf 60 beziehungsweise 150 Artikeln Trainiert wurden kaum einen Unterschied erkennen, sodass man darauf schließen kann, dass mehr Trainingsdaten keine erherbliche Verbesserung bringen. 
-	Dennoch sollte noch einmal auf einer größeren Menge Trainingsdaten trainiert werden, allerdings fehlen uns dafür die Ressourcen.  
+	Aus den Ergebnissen kann man entnehmen, dass die Variante, die die Personennamen trennt, einen deutlich besseren Recallwert aufweist. 
+	Dies ist dadurch zu erklären, dass auch im Text auch Personen markiert werden, welche nur mit Vor- oder Nachnamen erwähnt werden. 
+	Andererseits weist diese Variante ein schlechteres Ergebnis in der Genauigkeit (Precision) auf, da viele der Personennamen mehrdeutig sind (siehe ----Probleme-----).
 	
-	Des Weiteren sieht man einen Unterschied zwischen den Klassifikatoren welche Vor- und Nachnamen getrennt betrachten zu diesen, die Namen als ganzes betrachten. 
-	Mit Ersteren werden mehr Wörter richtig markiert, dies ist dadurch zu erklären, dass oftmals Vor und Nachnamen nur einzeln im Text auftauchen, welche schon in den Trainingdaten als solche markiert werden. 
-	Auf der anderen Seite werden dadurch auch mehr falsch positive, also Wörter die keine Kategorie repräsentieren, getaggt. 
-	Dies ist auf die Mehrdeutigkeit der Nachnamen von Personen zurückzuführen. 
-	Nicht desto Trotz kommen wir zu dem Schluss, dass eine Trennung nach Vor und Nachnamen besser ist. 
-	Man könnte die Ergebnisse vielleicht noch verbessern, indem man beim erstellen der Traningsdaten die linken und rechten Nachbarn der Wörter anschaut und somit auf Fehler schließt. 
+	Im Vergleich der benutzten Property-Dateien schneidet die Property-Datei des deuschen Klassifizierer besser ab. 
+	Jedoch sind die Unterschiede marginal (maximal 2,5\%). 	
 	
-	Im Vergleich zu den bereits existierenden Klassifikatoren sieht man, dass unsere Klassifikatoren schlechter abgeschlossen haben. 
-	Im Schnitt liegen unsere Klassifikatoren 15\% unter den Ergebnissen des offiziellen Klassifizierers.
+	Bei der Analyse der einzelnen Kategorien fällt auf, dass das markieren der Organisationen am schlechtesten abschneidet. 
+	Das ist zum Teil damit zu Begründen, dass das Wörterbuch keine Abkürzungen u.A. für Parteien enthält. 
+	Dadurch wird der NER nicht mit diesen Abkürzungen trainiert und erkennt diese folglich nicht. 
 	
-	\newpage
+	Im Vergleich zu dem bereits existierenden Klassifikators\footnote{\url{http://www.nlpado.de/~sebastian/software/ner_german.shtml}} schneiden unsere Ergebnisse schlechter ab. 
+	Dies war jedoch zu erwarten, da es sich bei dem deutschen Klassifikator nach eigenen Aussagen um einen der Besten für die deutsche Sprache handelt. 
+	
+\section{Fazit}	
+	Das maschinelle Erstellen von Trainigsdaten für den Stanford NER ist keine triviale Aufgabe. 
+	Unser Ansatz beruhte auf der Erstellung von Trainingsdaten mit Hilfe von Wörterbüchern. 
+	Diese Methodik bringt bestimmte Probleme mit sich. 
+	Besonders die Mehrdeutigkeiten von Namen können mit diesem Verfahren schlecht gelöst werden. 
+	Außerdem ist das Wörterbuch niemals vollständig, sodass nicht alle Entitäten gefunden werden können. 
+	Vermutlich würde ein Einbezug des Kontextes eines Wortes eine Verbesserung mit sich bringen. 
+	
+	
+\newpage
 \appendix{
 \section{Anhang}
 \hvFloat[%
@@ -123,32 +136,32 @@ capPos=t,%
 rotAngle=90,%
 objectPos=c%
 ]{table}{%
-\renewcommand{\arraystretch}{1,5}
-\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 \hline 
-Anzahl Artikel pro Kategorie & Variante & Property Datei & Precision & Recall & F1 & PPW & TP & FP & FN  \\ 
+Anzahl Artikel pro Kategorie & Variante & Property Datei & Precision & Recall & F1 & TP & FP & FN  \\ 
 \hline 
-je 20 & Personenname getrennt & default & 40,80\% & 46,07\% & 43,27\% & 40,79\% & 82& 119 & 96\\
+je 20 & Personenname getrennt & default & 40,80\% & 46,07\% & 43,27\% & 82& 119 & 96\\
 \hline 
-je 20 & Personen Vollnamen & default & 52,53\% & 29,21\% & 37,55\% & 52,52\% & 52 & 47 & 126\\
+je 20 & Personen Vollnamen & default & 52,53\% & 29,21\% & 37,55\% & 52 & 47 & 126\\
 \hline 
-je 20 & Personenname getrennt & german.dewac\_175m\_600 & 40,72\% & 44,38\% & 42.47\% & 40,72\% & 79 & 115 & 99\\
+je 20 & Personenname getrennt & german.dewac\_175m\_600 & 40,72\% & 44,38\% & 42.47\% & 79 & 115 & 99\\
 \hline 
-je 20 & Personen Vollnamen & german.dewac\_175m\_600 & 53,06\% & 29,21\% & 37,68\% & 53,06\% & 52 & 46 & 126\\
-\hline 
-\hline
-je 50 & Personenname getrennt & default & 39,11\% & 44,38\% & 41,58\% & 39,11\% & 79 & 123 & 99 \\ 
-\hline 
-je 50 & Personen Vollname & default & 49,53\% & 29,78\% & 37,19\% & 49,53\% & 53 & 54 & 125 \\ 
-\hline
-je 50 & Personenname getrennt & german.dewac\_175m\_600 & 40,98\% & 47,19\% & 43,86\% & 40,98\% & 84 & 121 & 94 \\ 
-\hline 
-je 50 & Personen Vollnamen & german.dewac\_175m\_600 & 50,94\% & 30,34\% & 38,03\% & 50,94\% & 54 & 52 & 124 \\ 
+je 20 & Personen Vollnamen & german.dewac\_175m\_600 & 53,06\% & 29,21\% & 37,68\% & 52 & 46 & 126\\
 \hline 
 \hline
-  &  & German-Classifier-DEWAC & 65,81\% & 57,30\% & 61,26\% & 65,81\% & 102 & 53 & 76 \\ 
+je 50 & Personenname getrennt & default & 39,11\% & 44,38\% & 41,58\% & 79 & 123 & 99 \\ 
 \hline 
-  &  & German-Classifier-HGC & 61,22\% & 50,56\% & 55,38\% & 61,22\% & 90 & 57 & 88 \\ 
+je 50 & Personen Vollname & default & 49,53\% & 29,78\% & 37,19\% & 53 & 54 & 125 \\ 
+\hline
+je 50 & Personenname getrennt & german.dewac\_175m\_600 & 40,98\% & 47,19\% & 43,86\% & 84 & 121 & 94 \\ 
+\hline 
+je 50 & Personen Vollnamen & german.dewac\_175m\_600 & 50,94\% & 30,34\% & 38,03\% & 54 & 52 & 124 \\ 
+\hline 
+\hline
+  &  & German-Classifier-DEWAC & 65,81\% & 57,30\% & 61,26\% & 102 & 53 & 76 \\ 
+\hline 
+  &  & German-Classifier-HGC & 61,22\% & 50,56\% & 55,38\% & 90 & 57 & 88 \\ 
 \hline
 \end{tabular} 
 }{Ergebnisse}{Ergebnistabelle}
