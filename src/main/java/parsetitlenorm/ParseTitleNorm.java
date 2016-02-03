@@ -17,6 +17,7 @@ import java.util.Iterator;
  * Klasse zum Parsen der titleNorm-Datei, die das Ergebnis der Title-Gruppe des Textmining-Praktikums war
  * Ziel ist es, mehrere (im Moment drei) Dateien im CSV-Format zu erstellen, die möglichst konsistent sind.
  * Zudem wird eine Blacklist hinzugenommen, um erste unerwünschte Namen zu filtern.
+ * @author Simon Bordewisch
  */
 public class ParseTitleNorm {
     /**

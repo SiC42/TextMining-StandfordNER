@@ -24,7 +24,7 @@ import parsing.GetDataFromWikiDump;
 /**
  * Hauptprogramm
  *
- * @author sebastian
+ * @author Sebastian Gottwald & Simon Bordewisch
  */
 public class Main {
 

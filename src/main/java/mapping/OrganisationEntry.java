@@ -5,6 +5,7 @@ import java.util.LinkedList;
 /**
  * Repräsentiert einzelne Organisationseinträge des Wörterbuchs
  * Vergleiche mit Entry (@link #Entry)
+ * @author Simon Bordewisch
  */
 public class OrganisationEntry extends Entry{
     /**

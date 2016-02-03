@@ -6,6 +6,7 @@ package parsetitlenorm;
  * werden, sondern auch evtuelle Abkürzungen, die hinter der Organisation in Klammern stehen.
  * Dabei werden verschiedene Filter verwendet um sicher zu stellen, dass die in Klammern stehenden Begriffe auch
  * möglichst wirklich Abkürzungen sind.
+ * @author Simon Bordewisch
  */
 public class OrganisationNameExtractor {
 

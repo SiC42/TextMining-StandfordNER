@@ -3,6 +3,11 @@ package mapping;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Diese Klasse ist die Haupt-Klasse dieses Packages.
+ * Sie initialisiert und füllt das Wörterbuch und erstellt die Texte mit den markierten Kategorien.
+ * @author Simon Bordewisch
+ */
 public class Mapping {
 
     /**
