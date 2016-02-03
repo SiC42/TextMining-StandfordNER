@@ -23,7 +23,6 @@ import parsing.GetDataFromWikiDump;
 
 /**
  * Hauptprogramm
- *
  * @author Sebastian Gottwald & Simon Bordewisch
  */
 public class Main {
@@ -47,7 +46,6 @@ public class Main {
 
     /**
      * Zeigt das Menü in der Komandozeile an und liest Auswahl ein
-     *
      * @return choice gibt Buchstaben des ausgwählten Untermenüs zurück
      */
     private static String showMenu() {
@@ -64,7 +62,7 @@ public class Main {
     }
 
     /**
-     * Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen)
+     * Setzt Parameter für Artikelextraktion
      */
     private static void optionWikiExtraction() {
         Scanner scanner = new Scanner(System.in);
@@ -83,7 +81,7 @@ public class Main {
     }
 
     /**
-     * Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen) führt dann Python
+     * Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen) und extrahiert Kategoriespeziefische Artikel
      */
     private static void optionWikiExtraction(
             String source_wikipediaDump,
@@ -121,9 +119,7 @@ public class Main {
         }
 
     /**
-     * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit
-     * Vergleichsdaten gemappt
-     *
+     * Setzt Parameter für das mapping
      * @throws UnsupportedEncodingException
      * @throws FileNotFoundException
      * @throws IOException
@@ -157,8 +153,7 @@ public class Main {
 
     /**
      * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit
-     * Vergleichsdaten gemappt
-     *
+     * Vergleichsdaten gemappt     *
      * @throws UnsupportedEncodingException
      * @throws FileNotFoundException
      * @throws IOException
@@ -193,12 +188,11 @@ public class Main {
 
     /**
      * Erstellt den Klassifikator für den Stanford NER
-     *
      * @throws Exception
      */
     private static void optionCreateClassifier() throws Exception {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Bitte Speicherort der property-file angeben oder 'd' drücken um default Datei zu nutzen, 'q' drücken um progrmm abzubrechen");
+        System.out.println("Bitte Speicherort der property-file angeben oder 'd' drücken um default Datei zu nutzen, 'q' drücken um Programm abzubrechen");
         String prop = scanner.next();
         if (prop.equals("d")) {
             prop = DEFAULT_PATH_PROPERTY;
@@ -212,7 +206,7 @@ public class Main {
     }
 
     /**
-     * Erstellt den Klassifikator für den Stanford NER
+     * Erstellt die Vergleichsdaten
      */
     private static void optionCreateComparisonFiles() {
         Scanner scanner = new Scanner(System.in);

@@ -5,7 +5,9 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 import java.io.*;
 
-//Wird benötigt um aus .bz2 WikipediaDump zu lesen
+/**
+*Wird benötigt um aus .bz2 WikipediaDump zu lesen
+*/
 public class UtilFunction {
     /**
      * Copied from Stackoverflow http://stackoverflow.com/questions/4834721/java-read-bz2-file-and-uncompress-parse-on-the-fly

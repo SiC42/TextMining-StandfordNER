@@ -107,8 +107,9 @@ public class GenerateTrainingFormat {
 
         }
     }
-
-    
+/**
+*Test
+*/
     public static void main(String[] args){
         GenerateTrainingFormat.generateTraining("Ergebnisse/Mapped.tok");
     }
