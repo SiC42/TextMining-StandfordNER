@@ -52,6 +52,8 @@ public class Dictionary {
 
     /**
      * Initialisiert leeres Wörterbuch mit leerer Blacklist.
+     * @param personFlag gibt an, ob Personen als Personen behandelt werden sollen.
+     *                   Vergleiche globale Variable mit dem selben Namen.
      */
     public Dictionary(boolean personFlag) {
         this.personFlag = personFlag;
@@ -65,6 +67,8 @@ public class Dictionary {
      * Initialisiert leeres Wörterbuch. Blacklist wird mit parameter gefüllt.
      *
      * @param blacklist Liste der Wörter, die nicht als Key im Wörterbuch aufgenommen werden sollen
+     * @param personFlag gibt an, ob Personen als Personen behandelt werden sollen.
+     *                   Vergleiche globale Variable mit dem selben Namen.
      */
     public Dictionary(TreeMap<String, String> blacklist, boolean personFlag) {
         this(personFlag);
@@ -317,44 +321,4 @@ public class Dictionary {
     public int size() {
         return dictionary.size();
     }
-
-
-    /**
-     * Hauptsächlich als Test-Methode für diese Klasse gedacht.
-     * Enthält hauptsächlich Beispiele, die die Methoden dieser Klasse testen sollen.
-     *
-     * @param args obsolete
-     */
-    public static void main(String[] args) {
-        Dictionary dict = new Dictionary(true);
-    /*dict.add("1. FC Köln", "Organisation");
-    dict.add("1. FC Bayern München", "Organisation");
-    dict.add("Club der Denker", "Organisation");
-    dict.add("Angela Merkel", "Person");
-    dict.add("Gerhard Schröder", "Person");
-    dict.add("Schroder", "Organisation");
-    dict.add("Joachim Deutschland", "Person");
-    dict.add("Deutschland", "Ort");
-    dict.add("Hans am Ende", "Person");
-    dict.add("BASF", "Organisation");
-    System.out.println(dict);
-    System.out.println("Maximale Eintragsgröße: " + dict.getMaxEntrySize());
-    System.out.println("====================");
-    System.out.println("Der Dümmer ist groß. || " + dict.findEntryMatch("Der Dümmer ist groß"));
-    System.out.println("Club der Denker. Er wurde überfallen || " + dict.findEntryMatch("Club der Denker. Er wurde überfallen"));
-    System.out.println("1. FC Köln ist fantastisch || " + dict.findEntryMatch("1. FC Köln ist fantastisch"));
-    System.out.println("BASF ist eines der großen Unternehmen || " + dict.findEntryMatch("BASF ist eines der großen Unternehmen"));
-    System.out.println("Merkels Geburtstag war großartig || " + dict.findEntryMatch("Angela Merkels Geburtstag war großartig"));
-    System.out.println("Gerhard Schröders Geburtstag war großartig || " + dict.findEntryMatch("Gerhard Schröders Geburtstag war großartig"));
-    System.out.println("Schröders Geburtstag war großartig || " + dict.findEntryMatch("Schröders Geburtstag war großartig"));
-    System.out.println("Schroders Geburtstag war großartig || " + dict.findEntryMatch("Schroders Geburtstag war großartig"));
-    System.out.println("====================");*/
-        dict.blacklist.put("Der", "");
-        dict.add("Angela Merkel", "Person");
-        dict.add("Merkur", "Ort");
-        dict.add("Der Schwabenhansel", "Person");
-
-        System.out.println(dict.getDictionary());
-    }
-
 }

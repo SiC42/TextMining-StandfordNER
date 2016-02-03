@@ -3,14 +3,43 @@ package mapping;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Diese Klasse ist die Haupt-Klasse dieses Packages.
+ * Sie initialisiert und füllt das Wörterbuch und erstellt die Texte mit den markierten Kategorien.
+ * @author Simon Bordewisch
+ */
 public class Mapping {
 
+    /**
+     * Standard-Pfad für die Ressourcen, nötig für die Blacklist
+     */
     private static final String DIR_RESSOURCE = "Ressourcen";
-    private static final String DIR_RESSOURCE_CSV = "Vergleichsdaten";
-    private static final String FILE_PERSON_CSV = "Person.csv";
-    private static final String FILE_ORGA_CSV = "Organisation.csv";
-    private static final String FILE_LOC_CSV = "Ort.csv";
+
+    /**
+     *  Dateiname der Blacklist-Datei
+     */
     private static final String FILE_BLACKLIST = "blacklist.txt";
+
+    /**
+     * Standard-Ordner, in dem die Vergleichsdaten (CSV-Dateien) liegen
+     */
+
+    private static final String DIR_RESSOURCE_CSV = "Vergleichsdaten";
+
+    /**
+     * Dateiname der CSV-Dateien mit den Personen-Daten
+     */
+    private static final String FILE_PERSON_CSV = "Person.csv";
+
+    /**
+     * Dateiname der CSV-Dateien mit den Organisationen-Daten
+     */
+    private static final String FILE_ORGA_CSV = "Organisation.csv";
+
+    /**
+     * Dateiname der CSV-Dateien mit den Ortschaft-Daten
+     */
+    private static final String FILE_LOC_CSV = "Ort.csv";
 
     private static final float STEP_SIZE_FEEDBACK = 0.1f;
 
@@ -63,9 +92,16 @@ public class Mapping {
     }
 
 
+    /**
+     * Eigentlicher Mapping-Prozess. erstellt aus übergebenen Text und dem Wörterbuch einen Text, in dem die
+     * Wörter für die relevanten Kategorien getaggt werden. Diese werden in den übergebenen Datei-Stream geschrieben.
+     * @param dict Wörterbuch, mit dem der Text markiert werden soll
+     * @param text Eingelesener Text, der markiert werden soll
+     * @param file Datei-Stream, in dem die Ausgangsdaten geschrieben werden sollen
+     * @throws IOException
+     */
     public static void mapping(Dictionary dict, LinkedList<String> text, BufferedWriter file) throws IOException {
         int maxEntrySize = dict.getMaxEntrySize();
-        int stelle = 0;
         float progress = STEP_SIZE_FEEDBACK;
         int initialSize = text.size();
         String word;
@@ -184,8 +220,4 @@ public class Mapping {
         }
     }
 
-
-    public static void main(String[] args) {
-        startMapping("test.txt", true);
-    }
 }

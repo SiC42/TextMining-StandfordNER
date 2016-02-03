@@ -8,6 +8,7 @@ import java.util.Comparator;
 /**
  * Vergleicht Wörter nicht auf "exact match", sondern vergleicht die "Prefixe" der Wörter (i.e. Nicht-Suffixe)
  * auf "exact match" und die Suffix-Wörter nur auf Ähnlichkeit.
+ * @author Simon Bordewisch
  */
 public class WordComparator implements Comparator<String> {
 

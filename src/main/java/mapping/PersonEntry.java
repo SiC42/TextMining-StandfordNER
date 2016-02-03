@@ -281,35 +281,4 @@ public class PersonEntry extends Entry {
         }
         return keys;
     }
-
-
-    /**
-     * Main-Methode, hauptsächlich für Testzwecke dieser Klasse gedacht.
-     */
-    public static void main(String[] args) {
-        /*String[] array = {"Angelina Jolie",
-                "Archimedes",
-                "Al-Biruni",
-                "Andrei Dmitrijewitsch Linde",
-                "Annette von Droste-Hülshoff",
-                "H. P. Lovecraft",
-                "Angela Merkel (Bundeskanzlerin)",
-                "Obama (Präsident USA)",
-                "Meister von 1473",
-                "Otto Merker"};
-        String[] array2 = {"Annette von Droste-Hülshoff", "Hans am Ende"};
-        System.out.println("Test-Ausgabe:");
-        for(String name : array2)
-        {
-            Entry entry = new PersonEntry(name, "Person");
-            System.out.println(name + ": " +  entry.getWords());
-            for(String word : entry.getKeys())
-            {
-                System.out.println(word);
-            }
-        }*/
-        PersonEntry person = new PersonEntry("Heinz Deutschland", "Person");
-        String satz = "Deutschland macht die Vorschläge";
-        System.out.println(person.compareTo(satz));
-    }
 }

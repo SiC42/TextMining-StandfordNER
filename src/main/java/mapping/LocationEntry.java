@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 /**
  * Repräsentiert einzelne Ortseinträge des Wörterbuchs
+ * @author Simon Bordewisch
  */
 public class LocationEntry extends Entry {
 
