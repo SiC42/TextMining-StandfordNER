@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mapping.Mapping;
@@ -20,7 +19,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.CompressorException;
 import parsetitlenorm.ParseTitleNorm;
 import parsing.GetDataFromWikiDump;
-import org.apache.commons.cli.*;
+
 
 /**
  * Hauptprogramm
@@ -257,6 +256,11 @@ public class Main {
         }
     }
 
+    /**
+     * Main-Methode. Ruft entweder Menü auf oder arbeitet mit den übergebenen Parametern
+     * @param args übergebene Optionen, vergleiche Ausgabe mit Parameter '-h'
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         Options options = new Options();
         options.addOption("h", "help", false, "zeigt diese Hilfe an");
