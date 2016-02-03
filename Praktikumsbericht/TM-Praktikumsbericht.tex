@@ -63,9 +63,15 @@
 			Für das Ähnlichkeitsmaß wurden die Ergebnisse der obig genannten Gruppen verwendet, welche auf der Levenshtein-Distanz relativ zur Gesamtlänge des Eintrages basiert, sodass die Ähnlichkeit ca. 83\% betragen muss.
 			Mit der Implementierung von Gewichtungen, die sowohl die Ähnlichkeit des Eintrags als auch das Fehlen von zum Beispiel der Vornamen (zum Beispeil im Fall des Eintrages ''Angela Merkel'', wenn im Text nur ''Merkel'' vorkommt) gewichtet, liefert das Matching gute Ergebnisse.
 			Diese Matchings wurden von dem Programm markiert.
-			-------------------Hierfür wurden XML-ähnliche Tags verwendet (vgl. Bild).---------------------------
+			Hierfür wurden XML-ähnliche Tags verwendet (vgl. Abbildung 1).
 			Der daraus resultierende Text mit den Tags wird anschließend in eine Datei geschrieben (Standard: ''Ergebnisse/Mapped.out'').
 			Diese ermöglicht durch seine Struktur ein Debugging der Texte, da die XML-Tags den im Wörterbuch gefundenen Match enthalten.
+			\begin{figure}[htb]
+			\centering
+			\includegraphics[scale=0.2]{Bild}
+			\label{Bild}
+			\caption{Vergleich Klartext und markierten Satz}
+			\end{figure}
 
 	\subsection{Erstellung der Traningsdaten}
 		Das im vorherigem Abschnitt erwähnte, getaggte Dokument wurde zunächst in einzelne Wörter aufgeteilt.
