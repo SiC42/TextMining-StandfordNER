@@ -22,7 +22,6 @@ import parsetitlenorm.ParseTitleNorm;
 import parsing.GetDataFromWikiDump;
 import org.apache.commons.cli.*;
 
-
 /**
  * Hauptprogramm
  *
@@ -55,62 +54,77 @@ public class Main {
     private static String showMenu() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n Was möchten Sie tun? \n "
-                + "a) Klartext aus WikipediaDump extrahieren?\n "
-                + "b) Trainingsdaten aus Klartext erstellen?\n "
-                + "c) Stanford-NER Klassifikator erstellen?\n "
-                + "d) Vergleichsdaten erstellen?\n "
+                + "a) Kategoriespeziefische Artikel aus dem WikipediaDump extrahieren?\n "
+                + "b) XML Datei bereinigen? \n "
+                + "c) Trainingsdaten aus Klartext erstellen?\n "
+                + "d) Stanford-NER Klassifikator erstellen?\n "
+                + "b) Vergleichsdaten erstellen?\n "
                 + "q) Beenden");
         String choice = scanner.next();
         return choice;
     }
 
     /**
-     *Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen) führt dann Python Script aus um Klatext aus dem XML-extrakt zu gewinnen
+     * Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen)
      */
     private static void optionWikiExtraction() {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Bitte den Ort des Wikipediadumps angeben, 'd' für default");
-            String source_wikipediaDump = scanner.next();
-            if (source_wikipediaDump.equals("d")) {
-                source_wikipediaDump = DEFAULT_PATH_WIKIDUMP;
-            }
-            System.out.println("Anzahl der Personen-Artikel ?");
-            int person_articles = Integer.parseInt(scanner.next());
-            System.out.println("Anzahl der Organisationen-Artikel ?");
-            int organisation_articles = Integer.parseInt(scanner.next());
-            System.out.println("Anzahl der Orts-Artikel ?");
-            int places_articles = Integer.parseInt(scanner.next());
-            optionWikiExtraction(source_wikipediaDump, person_articles, organisation_articles, places_articles);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Bitte den Ort des Wikipediadumps angeben, 'd' für default");
+        String source_wikipediaDump = scanner.next();
+        if (source_wikipediaDump.equals("d")) {
+            source_wikipediaDump = DEFAULT_PATH_WIKIDUMP;
+        }
+        System.out.println("Anzahl der Personen-Artikel ?");
+        int person_articles = Integer.parseInt(scanner.next());
+        System.out.println("Anzahl der Organisationen-Artikel ?");
+        int organisation_articles = Integer.parseInt(scanner.next());
+        System.out.println("Anzahl der Orts-Artikel ?");
+        int places_articles = Integer.parseInt(scanner.next());
+        optionWikiExtraction(source_wikipediaDump, person_articles, organisation_articles, places_articles);
     }
+
     /**
-     * verarbeitet Option 'a'
+     * Öffnet Wikipedia Dump (muss im .bz2 Format vorliegen) führt dann Python
      */
     private static void optionWikiExtraction(
-                String source_wikipediaDump,
-                int person_articles,
-                int organisation_articles,
-                int places_articles)
-    {
+            String source_wikipediaDump,
+            int person_articles,
+            int organisation_articles,
+            int places_articles) {
         try {
             long startTime = System.currentTimeMillis();
             GetDataFromWikiDump data = new GetDataFromWikiDump(source_wikipediaDump, places_articles, person_articles, organisation_articles);
             data.getData();
-
-            System.out.println("Starte XML bereinigung");
-            //Ausführen des Python-Scripts WikiExtractor.py wie auf Kommandozeile
-            Runtime.getRuntime().exec("python2 WikiExtractor.py -b 1G -o Ergebnisse Ergebnisse/ExtractedArticles.xml");
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;
-            System.out.println("XML-Bereinigung beendet. Dauer des ganzen Prozesses:  " + elapsedTime / 1000f + " sec\n");
+            System.out.println("Dauer der Extraktion:  " + elapsedTime / 1000f + " sec\n");
         } catch (CompressorException ex) { //Datei muss im .bz2 Format vorliegen
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
 
     /**
-     * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit Vergleichsdaten gemappt
+     * Extrahiert Klartext aus XML (Ergebnisse/ExtractedArticles.xml)
+     * !!! Python 2 wird benötigt !!!
+     */
+    private static void optionCleanXML() {
+        try{
+        long startTime = System.currentTimeMillis();
+        System.out.println("Starte XML bereinigung");
+        //Ausführen des Python-Scripts WikiExtractor.py wie auf Kommandozeile
+        Runtime.getRuntime().exec("python2 WikiExtractor.py -b 1G -o Ergebnisse Ergebnisse/ExtractedArticles.xml");
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("XML-Bereinigung beendet. Dauer des Prozesses:  " + elapsedTime / 1000f + " sec\n");
+    }catch(IOException e){
+        System.err.println(e);
+    }
+        }
+
+    /**
+     * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit
+     * Vergleichsdaten gemappt
+     *
      * @throws UnsupportedEncodingException
      * @throws FileNotFoundException
      * @throws IOException
@@ -142,9 +156,10 @@ public class Main {
         optionGenerateTrainingsformat(source_PlainText, personEntryScan);
     }
 
-
     /**
-     * Verarbeitet Option 'b'
+     * Erstellt TrainingsDaten aus einem Klartext, Ausgangsdaten werden mit
+     * Vergleichsdaten gemappt
+     *
      * @throws UnsupportedEncodingException
      * @throws FileNotFoundException
      * @throws IOException
@@ -179,6 +194,7 @@ public class Main {
 
     /**
      * Erstellt den Klassifikator für den Stanford NER
+     *
      * @throws Exception
      */
     private static void optionCreateClassifier() throws Exception {
@@ -197,7 +213,7 @@ public class Main {
     }
 
     /**
-     * verarbeitet Option 'd'
+     * Erstellt den Klassifikator für den Stanford NER
      */
     private static void optionCreateComparisonFiles() {
         Scanner scanner = new Scanner(System.in);
@@ -221,13 +237,16 @@ public class Main {
             if (s.equals("a")) {
                 optionWikiExtraction();
             }
-            if (s.equals("b")) {
-                optionGenerateTrainingsformat();
+            if(s.equals("b")){
+                optionCleanXML();
             }
             if (s.equals("c")) {
-                optionCreateClassifier();
+                optionGenerateTrainingsformat();
             }
             if (s.equals("d")) {
+                optionCreateClassifier();
+            }
+            if (s.equals("e")) {
                 optionCreateComparisonFiles();
             }
             if (s.equals("q")) {
@@ -238,8 +257,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args)  throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         Options options = new Options();
         options.addOption("h", "help", false, "zeigt diese Hilfe an");
         options.addOption("s", "source", true, "legt Source-Dateien für jeweiligen Prozess fest");
@@ -250,8 +268,12 @@ public class Main {
                 "et",
                 "extractText",
                 true, //Anz Artikel
-                "extrahiert angegebene Anzahl an Artikeln als Klartext aus Wikidump"));
-
+                "extrahiert angegebene Anzahl an Artikeln aus Wikidump"));
+        oGroup.addOption(new Option(
+                "cxml",
+                "cleanXML",
+                false,
+                "Erstellt Klartext aus XML-Datei"));
         oGroup.addOption(new Option(
                 "ctd",
                 "createTrainingData",
@@ -284,49 +306,53 @@ public class Main {
                 formatter.printHelp("Main", options);
                 return;
             }
-            if(cmd.hasOption("et"))
-            {
-                if(cmd.hasOption("s"))
+            if (cmd.hasOption("et")) {
+                if (cmd.hasOption("s")) {
                     path = cmd.getOptionValue("s");
-                else
+                } else {
                     path = DEFAULT_PATH_WIKIDUMP;
-                System.out.println("|" + cmd.getOptionValue("et")+"|");
+                }
+                System.out.println("|" + cmd.getOptionValue("et") + "|");
                 int noArticles = Integer.parseInt(cmd.getOptionValue("et"));
                 optionWikiExtraction(path, noArticles, noArticles, noArticles);
-            } else if(cmd.hasOption("ctd"))
-            {
-                if(cmd.hasOption("s"))
+            } else if(cmd.hasOption("cxml")){
+                optionCleanXML();            
+            }else if (cmd.hasOption("ctd")) {
+                if (cmd.hasOption("s")) {
                     path = cmd.getOptionValue("s");
-                else
+                } else {
                     path = DEFAULT_PATH_PLAINTEXT;
+                }
                 String dontGeneralize;
-                if(cmd.hasOption("gp"))
+                if (cmd.hasOption("gp")) {
                     dontGeneralize = "false";
-                else
+                } else {
                     dontGeneralize = "true";
-                optionGenerateTrainingsformat(path,dontGeneralize);
-            } else if(cmd.hasOption("cc"))
-            {
-                if(cmd.hasOption("s"))
+                }
+                optionGenerateTrainingsformat(path, dontGeneralize);
+            } else if (cmd.hasOption("cc")) {
+                if (cmd.hasOption("s")) {
                     path = cmd.getOptionValue("s");
-                else
+                } else {
                     path = DEFAULT_PATH_PROPERTY;
+                }
                 String[] arg = {"-prop", path};
                 CRFClassifier.main(arg);
-            } else if(cmd.hasOption("cnd")) //createNameData
+            } else if (cmd.hasOption("cnd")) //createNameData
             {
-                if(cmd.hasOption("s"))
+                if (cmd.hasOption("s")) {
                     path = cmd.getOptionValue("s");
-                else
+                } else {
                     path = DEFAULT_PATH_TITLENORM;
+                }
                 String[] pathArray = {path};
                 ParseTitleNorm.main(pathArray);
 
-            } else if(cmd.hasOption("cm"))
-            {
+            } else if (cmd.hasOption("cm")) {
                 contextMenu();
-            } else
+            } else {
                 contextMenu();
+            }
 
         } catch (ParseException pvException) {
             formatter.printHelp("Main", options);
