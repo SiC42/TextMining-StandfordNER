@@ -83,6 +83,7 @@
 		Die Letztere weist für die deutsche Sprache angepasste Features auf und trainiert unter Anderem zweimal auf den Trainingsdaten. 
 
 \section{Probleme bei der Lösung der Aufgabe}
+\label{Probleme}
 	Beim extrahieren des Klartextes aus den gefilterten Artikeln mit dem Programm ''WikiExtraktor.py'' werden zum bei manchen Artikeln Teile des Textes verworfen. 
 	Wir konnten leider die Ursache von diesem Fehler nicht finden. 
 	Da wir jedoch auf einer sehr großen Menge an Daten arbeiten, entschieden wir uns diesen Bug zu ignorieren, da das Training auf einem Teilartikel wahrscheinlich keine Auswirkung auf unser Ergebnis hat.
@@ -105,7 +106,7 @@
 	
 	Aus den Ergebnissen kann man entnehmen, dass die Variante, die die Personennamen trennt, einen deutlich besseren Recallwert aufweist. 
 	Dies ist dadurch zu erklären, dass auch im Text auch Personen markiert werden, welche nur mit Vor- oder Nachnamen erwähnt werden. 
-	Andererseits weist diese Variante ein schlechteres Ergebnis in der Genauigkeit (Precision) auf, da viele der Personennamen mehrdeutig sind (siehe ----Probleme-----).
+	Andererseits weist diese Variante ein schlechteres Ergebnis in der Genauigkeit (Precision) auf, da viele der Personennamen mehrdeutig sind (siehe \ref{Probleme} Probleme).
 	
 	Im Vergleich der benutzten Property-Dateien schneidet die Property-Datei des deuschen Klassifizierer besser ab. 
 	Jedoch sind die Unterschiede marginal (maximal 2,5\%). 	
