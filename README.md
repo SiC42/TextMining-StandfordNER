@@ -1,7 +1,7 @@
 Text Mining Standford NER Trainer
 
 
-Dieses Programm ist das Ergebnis des Praktikums für das Modul Text Mining im WS 15/16.
+Dieses Programm ist das Ergebnis des Praktikums für das Modul Text Mining im WS 15/16 an der Universität Leipzig.
 Es wurde mit Maven realisiert. Die abhängigen Bibliotheken können der POM-Datei entnommen werden.
 Zusätzlich wird das Python-Programm Wikipedia-Extractor (siehe http://medialab.di.unipi.it/wiki/Wikipedia_Extractor) benötigt.
 Dies muss sich im Root-Ordner des Programm befinden.
